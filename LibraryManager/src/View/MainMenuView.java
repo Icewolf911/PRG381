@@ -1,60 +1,38 @@
 package View;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
 
 public class MainMenuView extends JDialog {
     private JPanel contentPane;
-    private JButton buttonOK;
-    private JButton buttonCancel;
+    private JButton addAuthor_btn;
+    private JButton addBook_btn;
+    private JTable author_tbl;
+    private JTable book_tbl;
+    private JButton borrowBook_btn;
+    private JLabel authors_lbl;
+    private JLabel books_lbl;
+    private JLabel title_lbl;
 
     public MainMenuView() {
         setContentPane(contentPane);
         setModal(true);
-        getRootPane().setDefaultButton(buttonOK);
+        getRootPane().setDefaultButton(addAuthor_btn);
 
-        buttonOK.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onOK();
-            }
-        });
 
-        buttonCancel.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
-            }
-        });
-
-        // call onCancel() when cross is clicked
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent e) {
-                onCancel();
-            }
-        });
-
-        // call onCancel() on ESCAPE
-        contentPane.registerKeyboardAction(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
-    private void onOK() {
-        // add your code here
-        dispose();
-    }
 
-    private void onCancel() {
-        // add your code here if necessary
-        dispose();
-    }
 
     public static void main(String[] args) {
         MainMenuView dialog = new MainMenuView();
+        dialog.setPreferredSize(new Dimension(800,400));
         dialog.pack();
         dialog.setVisible(true);
+
         System.exit(0);
     }
+
+
 }
