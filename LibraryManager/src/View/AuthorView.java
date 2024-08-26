@@ -51,6 +51,11 @@ public class AuthorView {
                     DefaultTableModel model = (DefaultTableModel) tblAuthors.getModel();
                     model.addRow(new Object[]{name, surname, dob, email, phone});
                 }
+                txtName.setText("");
+                txtSurname.setText("");
+                txtDOB.setText("");
+                txtEmail.setText("");
+                txtphone.setText("");
             }
             public static AuthorController db = new AuthorController();
 
@@ -63,18 +68,17 @@ public class AuthorView {
                 for (String[] row : db.view()){
                     model.addRow(row);
                 }
+                txtName.setText("");
+                txtSurname.setText("");
+                txtDOB.setText("");
+                txtEmail.setText("");
+                txtphone.setText("");
             }
             public static AuthorController db = new AuthorController();
 
         });
 
 
-        deleteButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-            }
-        });
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -87,6 +91,11 @@ public class AuthorView {
 
                 // Remove the selected row from the table
                 tableModel.removeRow(selectedRow);
+                txtName.setText("");
+                txtSurname.setText("");
+                txtDOB.setText("");
+                txtEmail.setText("");
+                txtphone.setText("");
             }
         });
         editButton.addActionListener(new ActionListener() {
@@ -106,7 +115,13 @@ public class AuthorView {
                         tableModel.setValueAt(email, selectedRow, 3);
                         tableModel.setValueAt(phone, selectedRow, 4);
                     }
-                }
+                txtName.setText("");
+                txtSurname.setText("");
+                txtDOB.setText("");
+                txtEmail.setText("");
+                txtphone.setText("");
+            }
+
         });
     }
     public void main(String[] args) {
