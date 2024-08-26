@@ -6,7 +6,7 @@ import java.util.ArrayList;
 public class AuthorController {
     private AuthorModel authorModel;
 
-    public AuthorController(AuthorModel authorModel) {
+    public AuthorController() {
         this.authorModel = authorModel;
         //database add author
     }
