@@ -19,8 +19,12 @@ public class AuthorView {
     private JButton deleteButton;
     private JButton displayAllButton;
     private JButton editButton;
+    private DefaultTableModel tableModel;
 
     public AuthorView() {
+
+        tableModel = new DefaultTableModel(new String[]{"First Name", "Last Name", "Email", "Phone"}, 0);
+        tblAuthors.setModel(tableModel);
 
         createButton.addActionListener(new ActionListener() {
             @Override
@@ -65,6 +69,53 @@ public class AuthorView {
         });
 
 
+        deleteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
 
+            }
+        });
+        deleteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = tblAuthors.getSelectedRow();
+                if (selectedRow == -1) {
+                    JOptionPane.showMessageDialog(this,
+                            "Please select a borrower to delete.");
+                    return;
+                }
+
+                // Remove the selected row from the table
+                tableModel.removeRow(selectedRow);
+            }
+        });
+        editButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                    int selectedRow = tblAuthors.getSelectedRow();
+                    if (selectedRow != -1) {
+                        String name = txtName.getText();
+                        String surname = txtSurname.getText();
+                        String dob = txtDOB.getText();
+                        String email = txtEmail.getText();
+                        String phone = txtphone.getText();
+
+                        tableModel.setValueAt(name, selectedRow, 0);
+                        tableModel.setValueAt(surname, selectedRow, 1);
+                        tableModel.setValueAt(dob, selectedRow, 2);
+                        tableModel.setValueAt(email, selectedRow, 3);
+                        tableModel.setValueAt(phone, selectedRow, 4);
+                    }
+                }
+        });
+    }
+    public void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = new JFrame("Author View");
+            frame.setContentPane(new AuthorView().tblAuthors);
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.pack();
+            frame.setVisible(true);
+        });
     }
 }

@@ -68,4 +68,17 @@ public class AuthorController {
         }
         return dataList;
     }
+
+    public void connect() throws ClassNotFoundException{
+        try {
+            Class.forName(DRIVER);
+            this.con = DriverManager.getConnection(JDBC_URL);
+            if (this.con != null) {
+                System.out.println("Connected to db");
+            }
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
 }
