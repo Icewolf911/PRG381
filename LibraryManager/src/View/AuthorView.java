@@ -46,5 +46,15 @@ public class AuthorView {
                 }
             }
         });
+        displayAllButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                DefaultTableModel model = (DefaultTableModel) tblAuthors.getModel();
+
+                for (String[] row : db.vie()){
+                    model.addRow(row);
+                }
+            }
+        });
     }
 }
