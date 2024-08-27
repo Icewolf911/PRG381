@@ -118,18 +118,18 @@ public class BookView extends Component {
                     return;
                 }
 
-                ResultSet resultSet = dbConnection.getBookById(bookId);
+                BookModel book =  dbConnection.getBookById(bookId);
                 try {
-                    if (resultSet != null && resultSet.next()) {
-                        String title = resultSet.getString("title");
-                        String genre = resultSet.getString("genre");
-                        String publisher = resultSet.getString("publisher");
-                        String publicationDate = resultSet.getString("publicationDate");
-                        String language = resultSet.getString("language");
-                        int numCopies = resultSet.getInt("numberOfCopies");
-                        int availableCopies = resultSet.getInt("numberOfAvailableCopies");
-                        int borrowedCopies = resultSet.getInt("numberOfBorrowedCopies");
-                        int authorId = resultSet.getInt("author_id");
+                    if (book != null) {
+                        String title = book.getTitle();
+                        String genre = book.getGenre();
+                        String publisher = book.getPublisher();
+                        String publicationDate = book.getPublicationDate();
+                        String language = book.getLanguage();
+                        int numCopies = book.getNumberOfCopies();
+                        int availableCopies = book.getNumberOfAvailableCopies();
+                        int borrowedCopies = book.getNumberOfBorrowedCopies();
+                        int authorId = book.getAuthor().getId();
 
                         Title_txt.setText(title);
                         Genre_txt.setText(genre);
@@ -147,7 +147,7 @@ public class BookView extends Component {
                     } else {
                         JOptionPane.showMessageDialog(Mainpanel, "No book found with the given ID.", "No Results", JOptionPane.INFORMATION_MESSAGE);
                     }
-                } catch (SQLException ex) {
+                } catch (Exception ex) {
                     ex.printStackTrace();
                     JOptionPane.showMessageDialog(Mainpanel, "Error retrieving book details.", "Error", JOptionPane.ERROR_MESSAGE);
                 }

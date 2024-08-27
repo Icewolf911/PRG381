@@ -1,5 +1,7 @@
 package Database;
 
+import Model.AuthorModel;
+import Model.BookModel;
 import Model.PersonModel;
 
 import java.sql.*;
@@ -175,6 +177,8 @@ public class DBconnection {
 
                 // Assuming PersonModel has a constructor that takes all these fields
                 PersonModel person = new PersonModel(name, surname, dateOfBirth, email, phone);
+                person.setAuthor(rs.getBoolean("isAuthor"));
+                person.setBorrower(rs.getBoolean("isBorrower"));
                 people.add(person);
             }
 
@@ -186,16 +190,30 @@ public class DBconnection {
         return people;
     }
 
-    public ResultSet getBookById(int id) {
-        String sql = "SELECT * FROM Books WHERE id = ?";
+    public AuthorModel getAuthorById(int id) {
+        String sql = "SELECT * FROM People WHERE id = ? AND isAuthor = 1"; // Assuming isAuthor is stored as 1 for true
         try (PreparedStatement pstmt = con.prepareStatement(sql)) {
             pstmt.setInt(1, id);
-            return pstmt.executeQuery();
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                AuthorModel author = new AuthorModel();
+                author.setName(rs.getString("name"));
+                author.setSurname(rs.getString("surname"));
+                author.setDateOfBirth(rs.getDate("dateOfBirth").toString()); // Assuming you want a String format
+                author.setEmail(rs.getString("email"));
+                author.setPhone(rs.getString("phone"));
+                // Add other fields as necessary
+
+                return author;
+            }
         } catch (SQLException e) {
             e.printStackTrace();
-            return null;
         }
+        return null;
     }
+
+
 
 
     public ResultSet getBorrowedBooksByBorrowerId(int borrowerId) {
@@ -277,9 +295,139 @@ public class DBconnection {
         }
     }
 
+    public BookModel getBookById(int id) {
+        BookModel book = null;
+        String sql = "SELECT * FROM Books WHERE id = ?";
 
-    
+        try (PreparedStatement pstmt = con.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            ResultSet rs = pstmt.executeQuery();
 
+            if (rs.next()) {
+                book = new BookModel();
+                book.setTitle(rs.getString("title"));
+                book.setGenre(rs.getString("genre"));
+                book.setPublisher(rs.getString("publisher"));
+                book.setPublicationDate(rs.getDate("publicationDate").toString()); // Assuming you want a String format
+                book.setLanguage(rs.getString("language"));
+                book.setNumberOfCopies(rs.getInt("numberOfCopies"));
+                book.setNumberOfAvailableCopies(rs.getInt("numberOfAvailableCopies"));
+                book.setNumberOfBorrowedCopies(rs.getInt("numberOfBorrowedCopies"));
+
+                int authorId = rs.getInt("author_id");
+                AuthorModel author = getAuthorById(authorId); // Fetch the author using the author ID
+                book.setAuthor(author);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return book;
+    }
+
+    public ArrayList<BookModel> getBooks() {
+        ArrayList<BookModel> books = new ArrayList<>();
+        String sql = "SELECT * FROM Books";
+
+        try (Statement stmt = con.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                BookModel book = new BookModel();
+                book.setTitle(rs.getString("title"));
+                book.setGenre(rs.getString("genre"));
+                book.setPublisher(rs.getString("publisher"));
+                book.setPublicationDate(rs.getDate("publicationDate").toString()); // Assuming you want a String format
+                book.setLanguage(rs.getString("language"));
+                book.setNumberOfCopies(rs.getInt("numberOfCopies"));
+                book.setNumberOfAvailableCopies(rs.getInt("numberOfAvailableCopies"));
+                book.setNumberOfBorrowedCopies(rs.getInt("numberOfBorrowedCopies"));
+
+                int authorId = rs.getInt("author_id");
+                AuthorModel author = getAuthorById(authorId); // Assuming you have this method
+                book.setAuthor(author);
+
+                books.add(book);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return books;
+    }
+
+    public void populateTablesWithDummyData() {
+        String insertPeople = "INSERT INTO People (name, surname, dateOfBirth, email, phone, isAuthor, isBorrower) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String insertBooks = "INSERT INTO Books (title, genre, publisher, publicationDate, language, numberOfCopies, numberOfAvailableCopies, numberOfBorrowedCopies, author_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String insertBorrowedBooks = "INSERT INTO BorrowedBooks (book_id, borrower_id, borrowDate, returnDate) VALUES (?, ?, ?, ?)";
+
+        try (PreparedStatement pstmtPeople = con.prepareStatement(insertPeople);
+             PreparedStatement pstmtBooks = con.prepareStatement(insertBooks);
+             PreparedStatement pstmtBorrowedBooks = con.prepareStatement(insertBorrowedBooks)) {
+
+            // Insert dummy records into People
+            pstmtPeople.setString(1, "John");
+            pstmtPeople.setString(2, "Doe");
+            pstmtPeople.setDate(3, Date.valueOf("1980-01-01"));
+            pstmtPeople.setString(4, "john.doe@example.com");
+            pstmtPeople.setString(5, "123-456-7890");
+            pstmtPeople.setBoolean(6, true);  // Example author
+            pstmtPeople.setBoolean(7, false);
+            pstmtPeople.executeUpdate();
+
+            pstmtPeople.setString(1, "Jane");
+            pstmtPeople.setString(2, "Smith");
+            pstmtPeople.setDate(3, Date.valueOf("1990-02-02"));
+            pstmtPeople.setString(4, "jane.smith@example.com");
+            pstmtPeople.setString(5, "098-765-4321");
+            pstmtPeople.setBoolean(6, false);
+            pstmtPeople.setBoolean(7, true);  // Example borrower
+            pstmtPeople.executeUpdate();
+
+            // Assume we know the IDs of the inserted people (this is simplified)
+            int authorId = 1;  // Example author ID
+            int borrowerId = 2;  // Example borrower ID
+
+            // Insert dummy records into Books
+            pstmtBooks.setString(1, "The Great Adventure");
+            pstmtBooks.setString(2, "Fiction");
+            pstmtBooks.setString(3, "Fictional Publisher");
+            pstmtBooks.setDate(4, Date.valueOf("2024-01-01"));
+            pstmtBooks.setString(5, "English");
+            pstmtBooks.setInt(6, 10);
+            pstmtBooks.setInt(7, 8);
+            pstmtBooks.setInt(8, 2);
+            pstmtBooks.setInt(9, authorId);
+            pstmtBooks.executeUpdate();
+
+            pstmtBooks.setString(1, "Learning Java");
+            pstmtBooks.setString(2, "Educational");
+            pstmtBooks.setString(3, "Tech Publisher");
+            pstmtBooks.setDate(4, Date.valueOf("2023-01-01"));
+            pstmtBooks.setString(5, "English");
+            pstmtBooks.setInt(6, 5);
+            pstmtBooks.setInt(7, 5);
+            pstmtBooks.setInt(8, 0);
+            pstmtBooks.setInt(9, authorId);
+            pstmtBooks.executeUpdate();
+
+            // Assume we know the IDs of the inserted books (this is simplified)
+            int bookId1 = 1;  // Example book ID
+            int bookId2 = 2;  // Example book ID
+
+            // Insert dummy records into BorrowedBooks
+            pstmtBorrowedBooks.setInt(1, bookId1);
+            pstmtBorrowedBooks.setInt(2, borrowerId);
+            pstmtBorrowedBooks.setDate(3, Date.valueOf("2024-08-01"));
+            pstmtBorrowedBooks.setDate(4, Date.valueOf("2024-08-15"));
+            pstmtBorrowedBooks.executeUpdate();
+
+            System.out.println("Tables populated with dummy data");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
 
 }
