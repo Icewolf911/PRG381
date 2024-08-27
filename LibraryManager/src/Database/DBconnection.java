@@ -1,6 +1,10 @@
 package Database;
 
+import Model.PersonModel;
+
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DBconnection {
 
@@ -12,7 +16,7 @@ public class DBconnection {
     public void connect() {
         try {
             Class.forName(DRIVER);
-            Connection connection = DriverManager.getConnection(JDBC_URL);
+            con = DriverManager.getConnection(JDBC_URL);
             System.out.println("Connected to database");
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
@@ -20,19 +24,19 @@ public class DBconnection {
     }
 
     public void createTables() {
-        String createPeopleTable = "CREATE TABLE IF NOT EXISTS People (" +
-                "id INT AUTO_INCREMENT PRIMARY KEY, " +
+        String createPeopleTable = "CREATE TABLE People (" +
+                "id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
                 "name VARCHAR(255) NOT NULL, " +
                 "surname VARCHAR(255) NOT NULL, " +
                 "dateOfBirth DATE, " +
                 "email VARCHAR(255), " +
                 "phone VARCHAR(20), " +
-                "isAuthor BOOLEAN DEFAULT FALSE, " +
-                "isBorrower BOOLEAN DEFAULT FALSE" +
-                ");";
+                "isAuthor SMALLINT DEFAULT 0, " + // Using SMALLINT to represent BOOLEAN
+                "isBorrower SMALLINT DEFAULT 0" + // Using SMALLINT to represent BOOLEAN
+                ")";
 
-        String createBooksTable = "CREATE TABLE IF NOT EXISTS Books (" +
-                "id INT AUTO_INCREMENT PRIMARY KEY, " +
+        String createBooksTable = "CREATE TABLE Books (" +
+                "id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
                 "title VARCHAR(255) NOT NULL, " +
                 "genre VARCHAR(255), " +
                 "publisher VARCHAR(255), " +
@@ -43,26 +47,43 @@ public class DBconnection {
                 "numberOfBorrowedCopies INT NOT NULL, " +
                 "author_id INT, " +
                 "FOREIGN KEY (author_id) REFERENCES People(id)" +
-                ");";
+                ")";
 
-        String createBorrowedBooksTable = "CREATE TABLE IF NOT EXISTS BorrowedBooks (" +
-                "id INT AUTO_INCREMENT PRIMARY KEY, " +
+        String createBorrowedBooksTable = "CREATE TABLE BorrowedBooks (" +
+                "id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
                 "book_id INT, " +
                 "borrower_id INT, " +
                 "borrowDate DATE, " +
                 "returnDate DATE, " +
                 "FOREIGN KEY (book_id) REFERENCES Books(id), " +
                 "FOREIGN KEY (borrower_id) REFERENCES People(id)" +
-                ");";
+                ")";
 
         try (Statement stmt = con.createStatement()) {
-            stmt.execute(createPeopleTable);
-            stmt.execute(createBooksTable);
-            stmt.execute(createBorrowedBooksTable);
+            // Check if tables exist before creating them
+            DatabaseMetaData dbm = con.getMetaData();
+
+            ResultSet tables = dbm.getTables(null, null, "PEOPLE", null);
+            if (!tables.next()) {
+                stmt.execute(createPeopleTable);
+            }
+
+            tables = dbm.getTables(null, null, "BOOKS", null);
+            if (!tables.next()) {
+                stmt.execute(createBooksTable);
+            }
+
+            tables = dbm.getTables(null, null, "BORROWEDBOOKS", null);
+            if (!tables.next()) {
+                stmt.execute(createBorrowedBooksTable);
+            }
+
+            System.out.println("Tables created or already exist");
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
 
     public void insertPerson(String name, String surname, String dateOfBirth, String email, String phone, boolean isAuthor, boolean isBorrower) {
         String sql = "INSERT INTO People (name, surname, dateOfBirth, email, phone, isAuthor, isBorrower) VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -113,15 +134,56 @@ public class DBconnection {
     }
 
 
-    public ResultSet getPersonById(int id) {
+    public PersonModel getPersonById(int id) {
         String sql = "SELECT * FROM People WHERE id = ?";
+        PersonModel person = null;
+
         try (PreparedStatement pstmt = con.prepareStatement(sql)) {
             pstmt.setInt(1, id);
-            return pstmt.executeQuery();
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                String name = rs.getString("name");
+                String surname = rs.getString("surname");
+                String dateOfBirth = rs.getString("dateOfBirth");
+                String email = rs.getString("email");
+                String phone = rs.getString("phone");
+
+                // Create a PersonModel object with the retrieved data
+                person = new PersonModel(name, surname, dateOfBirth, email, phone);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
-            return null;
         }
+
+        return person;
+    }
+
+    public ArrayList<PersonModel> getPersons() {
+        String sql = "SELECT * FROM People";
+        ArrayList<PersonModel> people = new ArrayList<>();
+
+        try (PreparedStatement pstmt = con.prepareStatement(sql)) {
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                String name = rs.getString("name");
+                String surname = rs.getString("surname");
+                String dateOfBirth = rs.getString("dateOfBirth"); // Assuming dateOfBirth is stored as a string
+                String email = rs.getString("email");
+                String phone = rs.getString("phone");
+
+                // Assuming PersonModel has a constructor that takes all these fields
+                PersonModel person = new PersonModel(name, surname, dateOfBirth, email, phone);
+                people.add(person);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null; // You might want to return an empty list instead, depending on your error-handling strategy
+        }
+
+        return people;
     }
 
     public ResultSet getBookById(int id) {

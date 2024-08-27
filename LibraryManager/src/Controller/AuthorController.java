@@ -1,14 +1,32 @@
 package Controller;
+import Database.DBconnection;
 import Model.AuthorModel;
+import Model.PersonModel;
+
 import java.sql.*;
 import java.util.ArrayList;
 
 public class AuthorController {
     private AuthorModel authorModel;
+    static DBconnection db = new DBconnection();
 
     public AuthorController() {
         this.authorModel = authorModel;
         //database add author
+
+    }
+
+    public static ArrayList<PersonModel> getAuthors() {
+        db.connect();
+        db.createTables();
+        ArrayList<PersonModel> authors = new ArrayList<>();
+        ArrayList<PersonModel> people = db.getPersons();
+        for (PersonModel person : people) {
+            if (person instanceof AuthorModel) {
+                authors.add(person);
+            }
+        }
+        return authors;
     }
 
     public AuthorModel getAuthorModel() {
