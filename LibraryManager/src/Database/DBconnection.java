@@ -216,16 +216,28 @@ public class DBconnection {
 
 
 
-    public ResultSet getBorrowedBooksByBorrowerId(int borrowerId) {
+    public List<BookModel> getBorrowedBooksByBorrowerId(int borrowerId) {
+        List<BookModel> borrowedBooks = new ArrayList<>();
         String sql = "SELECT * FROM BorrowedBooks WHERE borrower_id = ?";
+
         try (PreparedStatement pstmt = con.prepareStatement(sql)) {
             pstmt.setInt(1, borrowerId);
-            return pstmt.executeQuery();
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                int bookId = rs.getInt("book_id");
+                BookModel book = getBookById(bookId); // Fetch the book details using its ID
+                if (book != null) {
+                    borrowedBooks.add(book);
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
-            return null;
         }
+
+        return borrowedBooks;
     }
+
 
     public void updatePerson(int id, String name, String surname, String dateOfBirth, String email, String phone, boolean isAuthor, boolean isBorrower) {
         String sql = "UPDATE People SET name = ?, surname = ?, dateOfBirth = ?, email = ?, phone = ?, isAuthor = ?, isBorrower = ? WHERE id = ?";
