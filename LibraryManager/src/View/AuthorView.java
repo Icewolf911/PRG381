@@ -37,13 +37,13 @@ public class AuthorView {
                 String phone = txtphone.getText();
 
                 if (name.isEmpty() || surname.isEmpty() || dob.isEmpty() || email.isEmpty() || phone.isEmpty()){
-                    JOptionPane.showConfirmDialog(this,//weni wat om hier te doen nie
+                    JOptionPane.showConfirmDialog(Mainpanel,//weni wat om hier te doen nie -> the 'this' needs to reference an actual component, I just referenced the Mainpanel component in place of 'this'
                             "Enter all fields",
                             "Error",
                             JOptionPane.ERROR_MESSAGE);
                 }else {
                     db.add(name, surname, dob, email, phone);
-                    JOptionPane.showConfirmDialog(this,//weni wat om hier te doen nie
+                    JOptionPane.showConfirmDialog(Mainpanel,//weni wat om hier te doen nie -> the 'this' needs to reference an actual component, I just referenced the Mainpanel component in place of 'this'
                             "Added to db",
                             "Confirm",
                             JOptionPane.ERROR_MESSAGE);
@@ -84,7 +84,7 @@ public class AuthorView {
             public void actionPerformed(ActionEvent e) {
                 int selectedRow = tblAuthors.getSelectedRow();
                 if (selectedRow == -1) {
-                    JOptionPane.showMessageDialog(this,
+                    JOptionPane.showMessageDialog(Mainpanel,
                             "Please select a borrower to delete.");
                     return;
                 }
