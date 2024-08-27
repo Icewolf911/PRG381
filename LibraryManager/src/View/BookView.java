@@ -12,6 +12,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.swing.JOptionPane;
 import java.sql.*;
+import Controller.*;
+import Model.*;
+import Database.*;
+
 
 public class BookView extends Component {
     private JPanel Header;
@@ -42,7 +46,7 @@ public class BookView extends Component {
 
     public BookView(){
         //DefaultTableModel tableModel = (DefaultTableModel) ExistingBooks_tbl.getModel();
-        DBConnection dbConnection = new DBConnection();
+        DBconnection dbConnection = new DBconnection();
         dbConnection.connect();
 
         AddBook_btn.addActionListener(new ActionListener() {
@@ -62,6 +66,7 @@ public class BookView extends Component {
                 Date publishDateAsDate = null;
                 try {
                     publishDateAsDate = dateFormat.parse(publishDate);
+                    publishDate=publishDateAsDate.toString();
                 } catch (ParseException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -69,7 +74,8 @@ public class BookView extends Component {
                 if (title.isEmpty() || genre.isEmpty() || author.isEmpty() || publisher.isEmpty() || publishDate.isEmpty() || language.isEmpty() || NumCopies_txt.getText().isEmpty() || AvailableCopies_txt.getText().isEmpty() || BorrowedCopies_txt.getText().isEmpty()) {
                     JOptionPane.showMessageDialog(Mainpanel, "One or more fields are invalid.", "Invalid Fields", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    dbConnection.insertBook(title, genre, publisher, publishDateAsDate, language, numCopies, availableCopies, borrowedCopies, getAuthorId(author));
+                    dbConnection.insertBook(title, genre, publisher, publishDate, language, numCopies,
+                            availableCopies, borrowedCopies, getAuthorId(author));
 
                     DefaultTableModel model = (DefaultTableModel) ExistingBooks_tbl.getModel();
                     model.addRow(new Object[] {title, genre, author, publisher, publishDateAsDate, language, numCopies, availableCopies, borrowedCopies});
@@ -232,5 +238,14 @@ public class BookView extends Component {
         Title_txt.requestFocus();
     }
 
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = new JFrame("Book View");
+            frame.setContentPane(new BookView().Mainpanel);
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.pack();
+            frame.setVisible(true);
+        });
+    }
 
 }
