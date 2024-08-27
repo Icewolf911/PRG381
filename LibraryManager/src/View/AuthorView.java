@@ -124,10 +124,10 @@ public class AuthorView {
 
         });
     }
-    public void main(String[] args) {
+    public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("Author View");
-            frame.setContentPane(new AuthorView().tblAuthors);
+            frame.setContentPane(new AuthorView().Mainpanel);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.pack();
             frame.setVisible(true);
