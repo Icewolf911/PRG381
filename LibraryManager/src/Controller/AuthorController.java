@@ -18,11 +18,10 @@ public class AuthorController {
 
     public static ArrayList<PersonModel> getAuthors() {
         db.connect();
-        db.createTables();
         ArrayList<PersonModel> authors = new ArrayList<>();
         ArrayList<PersonModel> people = db.getPersons();
         for (PersonModel person : people) {
-            if (person instanceof AuthorModel) {
+            if (person.isAuthor()) {
                 authors.add(person);
             }
         }
