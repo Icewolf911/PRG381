@@ -6,6 +6,9 @@ public class PersonModel {
     private String dateOfBirth;
     private String email;
     private String phone;
+    private int id;
+    private boolean isAuthor;
+    private boolean isBorrower;
 
     public PersonModel(String name, String surname, String dateOfBirth, String email, String phone) {
         this.name = name;
@@ -13,6 +16,10 @@ public class PersonModel {
         this.dateOfBirth = dateOfBirth;
         this.email = email;
         this.phone = phone;
+    }
+
+    public PersonModel() {
+
     }
 
     public String getName() {
@@ -53,5 +60,29 @@ public class PersonModel {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public boolean isAuthor() {
+        return isAuthor;
+    }
+
+    public void setAuthor(boolean author) {
+        isAuthor = author;
+    }
+
+    public boolean isBorrower() {
+        return isBorrower;
+    }
+
+    public void setBorrower(boolean borrower) {
+        isBorrower = borrower;
     }
 }

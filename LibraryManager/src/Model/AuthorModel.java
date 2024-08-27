@@ -8,6 +8,10 @@ public class AuthorModel extends PersonModel{
         super(name, surname, dateOfBirth, email, phone);
     }
 
+    public AuthorModel() {
+        super();
+    }
+
     public List<BookModel> getWrittenBooks() {
         return writtenBooks;
     }
