@@ -54,8 +54,11 @@ public class AuthorView {
                             "Error",
                             JOptionPane.ERROR_MESSAGE);
                 }else {
+
+
                     AuthorController.addAuthor(name, surname, dob, email, phone);
                     JOptionPane.showConfirmDialog(Mainpanel,//weni wat om hier te doen nie -> the 'this' needs to reference an actual component, I just referenced the Mainpanel component in place of 'this'
+
                             "Added to db",
                             "Confirm",
                             JOptionPane.ERROR_MESSAGE);

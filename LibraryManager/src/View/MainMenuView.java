@@ -36,6 +36,7 @@ public class MainMenuView extends JDialog {
         populateBooksTable();
 
 
+
     }
 
     private void populateAuthorTable() {
