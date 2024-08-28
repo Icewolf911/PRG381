@@ -86,6 +86,28 @@ public class DBconnection {
         }
     }
 
+    public void clearDatabase() {
+        try (Statement stmt = con.createStatement()) {
+            // Disable foreign key constraints
+            stmt.execute("SET CONSTRAINTS ALL DEFERRED");
+
+            // Delete data from tables
+            stmt.execute("DELETE FROM BorrowedBooks");
+            stmt.execute("DELETE FROM Books");
+            stmt.execute("DELETE FROM People");
+
+            // Drop and recreate tables to reset identity columns
+            stmt.execute("DROP TABLE BorrowedBooks");
+            stmt.execute("DROP TABLE Books");
+            stmt.execute("DROP TABLE People");
+
+            createTables(); // Call the method to recreate the tables
+
+            System.out.println("Database cleared");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void insertPerson(String name, String surname, String dateOfBirth, String email, String phone, boolean isAuthor, boolean isBorrower) {
         String sql = "INSERT INTO People (name, surname, dateOfBirth, email, phone, isAuthor, isBorrower) VALUES (?, ?, ?, ?, ?, ?, ?)";
