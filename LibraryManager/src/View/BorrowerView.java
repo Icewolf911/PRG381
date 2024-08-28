@@ -14,7 +14,6 @@ public class BorrowerView extends JFrame {
     private JButton btnUpdate;
     private JButton btnDelete;
     private JTable tableBorrowers;
-    private JPanel Mainpannel;
     private DefaultTableModel tableModel;
 
     public BorrowerView() {
@@ -95,10 +94,11 @@ public class BorrowerView extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("Borrower View");
-            frame.setContentPane(new BorrowerView().Mainpannel);
+            frame.setContentPane(new BorrowerView().tableBorrowers);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.pack();
             frame.setVisible(true);
+            
         });
     }
 }
