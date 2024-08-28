@@ -110,8 +110,10 @@ public class DBconnection {
     }
 
     public void insertPerson(String name, String surname, String dateOfBirth, String email, String phone, boolean isAuthor, boolean isBorrower) {
+
         String sql = "INSERT INTO People (id,name, surname, dateOfBirth, email, phone, isAuthor, isBorrower) VALUES " +
                 "(?,?, ?, ?, ?, ?, ?, ?)";
+
         try (PreparedStatement pstmt = con.prepareStatement(sql)) {
             pstmt.setInt(1, getLastInsertedPersonId() + 1); // Get the last inserted ID and increment by 1
             pstmt.setString(2, name);

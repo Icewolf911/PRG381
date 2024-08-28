@@ -34,9 +34,6 @@ public class AuthorView {
         DBconnection db = new DBconnection();
 
 
-
-
-
         populateAuthorTable(AuthorController.getAuthors());
 
         createButton.addActionListener(new ActionListener() {
@@ -141,6 +138,7 @@ public class AuthorView {
                 if (e.getClickCount() == 1) { // single click
 
                     int selectedRow = tblAuthors.getSelectedRow();
+
                     if (selectedRow != -1) {
                         txtName.setText((String) tblAuthors.getValueAt(selectedRow, 0));
                         txtSurname.setText((String) tblAuthors.getValueAt(selectedRow, 0));
@@ -148,6 +146,7 @@ public class AuthorView {
                         txtEmail.setText((String) tblAuthors.getValueAt(selectedRow, 0));
                         txtphone.setText((String) tblAuthors.getValueAt(selectedRow, 0));
                     }
+
 
                 }
             }
