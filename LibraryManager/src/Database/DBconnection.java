@@ -110,7 +110,7 @@ public class DBconnection {
     }
 
     public void insertPerson(String name, String surname, String dateOfBirth, String email, String phone, boolean isAuthor, boolean isBorrower) {
-        String sql = "INSERT INTO People (name, surname, dateOfBirth, email, phone, isAuthor, isBorrower) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO People (id,name, surname, dateOfBirth, email, phone, isAuthor, isBorrower) VALUES (NULL,?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement pstmt = con.prepareStatement(sql)) {
             pstmt.setString(1, name);
             pstmt.setString(2, surname);
