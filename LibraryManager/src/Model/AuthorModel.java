@@ -1,9 +1,10 @@
 package Model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AuthorModel extends PersonModel{
-    List<BookModel> writtenBooks;
+    ArrayList<BookModel> writtenBooks;
     public AuthorModel(String name, String surname, String dateOfBirth, String email, String phone) {
         super(name, surname, dateOfBirth, email, phone);
     }
@@ -11,12 +12,16 @@ public class AuthorModel extends PersonModel{
     public AuthorModel() {
         super();
     }
+    public AuthorModel(PersonModel person) {
+        super(person.getName(), person.getSurname(), person.getDateOfBirth(), person.getEmail(), person.getPhone());
 
-    public List<BookModel> getWrittenBooks() {
+    }
+
+    public ArrayList<BookModel> getWrittenBooks() {
         return writtenBooks;
     }
 
-    public void setWrittenBooks(List<BookModel> writtenBooks) {
+    public void setWrittenBooks(ArrayList<BookModel> writtenBooks) {
         this.writtenBooks = writtenBooks;
     }
 }

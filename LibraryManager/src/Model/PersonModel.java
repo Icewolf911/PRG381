@@ -85,4 +85,8 @@ public class PersonModel {
     public void setBorrower(boolean borrower) {
         isBorrower = borrower;
     }
+
+    public String getFullName() {
+        return name + " " + surname;
+    }
 }
