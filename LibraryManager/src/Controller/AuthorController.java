@@ -10,9 +10,11 @@ public class AuthorController {
     private AuthorModel authorModel;
     static DBconnection db = new DBconnection();
 
+
     public AuthorController() {
         this.authorModel = authorModel;
         //database add author
+        db.connect();
 
     }
 
@@ -26,6 +28,11 @@ public class AuthorController {
             }
         }
         return authors;
+    }
+
+    public static void addAuthor(String name, String surname, String dob, String email, String phone) {
+        db.connect();
+        db.insertPerson(name, surname, dob, email, phone, true, false);
     }
 
     public AuthorModel getAuthorModel() {
@@ -51,15 +58,15 @@ public class AuthorController {
         }
     }
 
-    public void add(String name, String surname, String dob, String email, String phone){
-        try {
-            String query = "INSERT INTO Authors VALUES ('"+name+"','"+surname+"', '"+dob+"', '"+email+"', '"+phone+"')";
-            this.con.createStatement().execute(query);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Data not added");
-        }
-    }
+//    public void add(String name, String surname, String dob, String email, String phone){
+//        try {
+//            String query = "INSERT INTO Authors VALUES ('"+name+"','"+surname+"', '"+dob+"', '"+email+"', '"+phone+"')";
+//            this.con.createStatement().execute(query);
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//            System.out.println("Data not added");
+//        }
+//    }
 
     public ArrayList<String[]> view(){
         ArrayList<String[]> dataList = new ArrayList<>();
