@@ -47,13 +47,9 @@ public class AuthorView {
                             "Error",
                             JOptionPane.ERROR_MESSAGE);
                 }else {
-<<<<<<< Updated upstream
+
                     AuthorController.addAuthor(name, surname, dob, email, phone);
                     JOptionPane.showConfirmDialog(Mainpanel,//weni wat om hier te doen nie -> the 'this' needs to reference an actual component, I just referenced the Mainpanel component in place of 'this'
-=======
-                    db.add(name, surname, dob, email, phone);
-                    JOptionPane.showConfirmDialog(Mainpanel,
->>>>>>> Stashed changes
                             "Added to db",
                             "Confirm",
                             JOptionPane.ERROR_MESSAGE);
@@ -68,7 +64,7 @@ public class AuthorView {
                 txtEmail.setText("");
                 txtphone.setText("");
             }
-            public static AuthorController db = new AuthorController();
+
 
         });
         ClearButton.addActionListener(new ActionListener() {
