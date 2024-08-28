@@ -1,10 +1,12 @@
 package Controller;
 import Database.DBconnection;
 import Model.AuthorModel;
+import Model.BookModel;
 import Model.PersonModel;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class AuthorController {
     private AuthorModel authorModel;
@@ -18,16 +20,32 @@ public class AuthorController {
 
     }
 
-    public static ArrayList<PersonModel> getAuthors() {
+    public static ArrayList<AuthorModel> getAuthors() {
         db.connect();
-        ArrayList<PersonModel> authors = new ArrayList<>();
+        ArrayList<AuthorModel> authors = new ArrayList<>();
         ArrayList<PersonModel> people = db.getPersons();
         for (PersonModel person : people) {
             if (person.isAuthor()) {
-                authors.add(person);
+                AuthorModel author = new AuthorModel(person);
+                author.setId(person.getId());
+                author.setAuthor(true);
+                author.setWrittenBooks(getBooksByAuthorId(person.getId()));
+                authors.add(author);
             }
         }
         return authors;
+    }
+
+    private static ArrayList<BookModel> getBooksByAuthorId(int id) {
+        db.connect();
+        ArrayList<BookModel> books = db.getBooks();
+        ArrayList<BookModel> authorBooks = new ArrayList<>();
+        for (BookModel book : books) {
+            if (book.getAuthor().getId() == id) {
+                authorBooks.add(book);
+            }
+        }
+        return authorBooks;
     }
 
     public static void addAuthor(String name, String surname, String dob, String email, String phone) {

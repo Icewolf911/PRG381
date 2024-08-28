@@ -51,9 +51,10 @@ public class BookView extends Component {
         //DefaultTableModel tableModel = (DefaultTableModel) ExistingBooks_tbl.getModel();
         DBconnection dbConnection = new DBconnection();
         dbConnection.connect();
-        ArrayList<PersonModel> authors = AuthorController.getAuthors();
+        ArrayList<AuthorModel> authors = AuthorController.getAuthors();
         for (PersonModel author : authors) {
-            Author_cmbx.addItem(author.getName());
+//            Author_cmbx.addItem(author.getName() + " " + author.getSurname());
+            Author_cmbx.addItem(author);
         }
         populateBooksTable();
 
@@ -63,14 +64,15 @@ public class BookView extends Component {
             public void actionPerformed(ActionEvent e) {
                 String title = Title_txt.getText();
                 String genre = Genre_txt.getText();
-                String author = (String) Author_cmbx.getItemAt(Author_cmbx.getSelectedIndex());
+
+                AuthorModel author = (AuthorModel) Author_cmbx.getItemAt(Author_cmbx.getSelectedIndex());
                 String publisher = Publisher_txt.getText();
                 String publishDate = PublishDate_txt.getText();
                 String language = Language_txt.getText();
                 int numCopies = Integer.parseInt(NumCopies_txt.getText());
                 int availableCopies = Integer.parseInt(AvailableCopies_txt.getText());
                 int borrowedCopies = Integer.parseInt(BorrowedCopies_txt.getText());
-                int bookID = Integer.parseInt(BookID_txt.getText());
+
 
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 Date publishDateAsDate = null;
@@ -85,7 +87,7 @@ public class BookView extends Component {
                     JOptionPane.showMessageDialog(Mainpanel, "One or more fields are invalid.", "Invalid Fields", JOptionPane.ERROR_MESSAGE);
                 } else {
                     dbConnection.insertBook(title, genre, publisher, publishDateAsDate, language, numCopies,
-                            availableCopies, borrowedCopies);
+                            availableCopies, borrowedCopies, 0);
                     System.out.println("Book Added");
                     DefaultTableModel model = (DefaultTableModel) ExistingBooks_tbl.getModel();
                     model.addRow(new Object[] {title, genre, author, publisher, publishDateAsDate, language, numCopies, availableCopies, borrowedCopies});
@@ -182,7 +184,7 @@ public class BookView extends Component {
 
                 String title = Title_txt.getText();
                 String genre = Genre_txt.getText();
-                String author = (String) Author_cmbx.getItemAt(Author_cmbx.getSelectedIndex());
+                AuthorModel author = (AuthorModel) Author_cmbx.getItemAt(Author_cmbx.getSelectedIndex());
                 String publisher = Publisher_txt.getText();
                 String publicationDate = PublishDate_txt.getText();
                 String language = Language_txt.getText();
@@ -191,9 +193,9 @@ public class BookView extends Component {
                 int borrowedCopies = Integer.parseInt(BorrowedCopies_txt.getText());
                 int bookID = Integer.parseInt(BookID_txt.getText());
 
-                int authorId = getAuthorId(author);
+                int authorId = author.getId();
 
-                if (title.isEmpty() || genre.isEmpty() || author==null || author.isEmpty() || publisher.isEmpty() || publicationDate.isEmpty() || language.isEmpty() || NumCopies_txt.getText().isEmpty() || AvailableCopies_txt.getText().isEmpty() || BorrowedCopies_txt.getText().isEmpty() || BookID_txt.getText().isEmpty()) {
+                if (title.isEmpty() || genre.isEmpty() || author==null || publisher.isEmpty() || publicationDate.isEmpty() || language.isEmpty() || NumCopies_txt.getText().isEmpty() || AvailableCopies_txt.getText().isEmpty() || BorrowedCopies_txt.getText().isEmpty() || BookID_txt.getText().isEmpty()) {
                     JOptionPane.showMessageDialog(Mainpanel, "One or more fields are invalid.", "Invalid Fields", JOptionPane.ERROR_MESSAGE);
                 } else {
                     dbConnection.updateBook(bookId, title, genre, publisher, publicationDate, language, numCopies, availableCopies, borrowedCopies, authorId);

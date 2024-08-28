@@ -64,7 +64,7 @@ public class AuthorView {
                             JOptionPane.ERROR_MESSAGE);
 
                     DefaultTableModel model = (DefaultTableModel) tblAuthors.getModel();
-                    model.addRow(new Object[]{name, surname, dob, email, phone});
+                    populateAuthorTable(AuthorController.getAuthors());
                 }
 
                 txtName.setText("");
@@ -162,9 +162,9 @@ public class AuthorView {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                ArrayList<PersonModel> authors = AuthorController.getAuthors();
-                ArrayList<PersonModel> result = new ArrayList<>();
-                for (PersonModel author: authors) {
+                ArrayList<AuthorModel> authors = AuthorController.getAuthors();
+                ArrayList<AuthorModel> result = new ArrayList<>();
+                for (AuthorModel author: authors) {
                     if (author.getName().contains(Search_txt.getText())||author.getSurname().contains(Search_txt.getText())||author.getEmail().contains(Search_txt.getText())){
                         result.add(author);
                     }
@@ -183,7 +183,7 @@ public class AuthorView {
             frame.setVisible(true);
         });
     }
-    private void populateAuthorTable(ArrayList<PersonModel> authors) {
+    private void populateAuthorTable(ArrayList<AuthorModel> authors) {
 
         // Create a table model with two columns: "First Name" and "Last Name"
         DefaultTableModel model = new DefaultTableModel(new String[]{"First Name", "Last Name","DateofBirth", "Email", "Phone","ID"}, 0);
@@ -192,7 +192,7 @@ public class AuthorView {
         tblAuthors.setModel(model);
 
         // Populate the table with authors
-        for (PersonModel author : authors) {
+        for (AuthorModel author : authors) {
             String firstName = author.getName();
             String lastName = author.getSurname();
             String dob = author.getDateOfBirth();
