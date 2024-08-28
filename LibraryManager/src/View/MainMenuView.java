@@ -2,6 +2,7 @@ package View;
 
 import Controller.BookController;
 import Database.DBconnection;
+import Model.AuthorModel;
 import Model.BookModel;
 import Model.PersonModel;
 
