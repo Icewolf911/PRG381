@@ -5,14 +5,15 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.SQLOutput;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import javax.swing.JOptionPane;
-import java.sql.*;
-import Controller.*;
+
+import Controller.AuthorController;
+import Controller.BookController;
 import Model.*;
 import Database.*;
 
@@ -42,27 +43,36 @@ public class BookView extends Component {
     private JButton Update_btn;
     private JButton Delete_btn;
     private JButton Search_btn;
+    private JComboBox Author_cmbx;
+    private JTextField BookID_txt;
 
 
     public BookView(){
         //DefaultTableModel tableModel = (DefaultTableModel) ExistingBooks_tbl.getModel();
         DBconnection dbConnection = new DBconnection();
         dbConnection.connect();
+        ArrayList<PersonModel> authors = AuthorController.getAuthors();
+        for (PersonModel author : authors) {
+            Author_cmbx.addItem(author.getName());
+        }
+        populateBooksTable();
+
 
         AddBook_btn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String title = Title_txt.getText();
                 String genre = Genre_txt.getText();
-                String author = Author_txt.getText();
+                String author = (String) Author_cmbx.getItemAt(Author_cmbx.getSelectedIndex());
                 String publisher = Publisher_txt.getText();
                 String publishDate = PublishDate_txt.getText();
                 String language = Language_txt.getText();
                 int numCopies = Integer.parseInt(NumCopies_txt.getText());
                 int availableCopies = Integer.parseInt(AvailableCopies_txt.getText());
                 int borrowedCopies = Integer.parseInt(BorrowedCopies_txt.getText());
+                int bookID = Integer.parseInt(BookID_txt.getText());
 
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 Date publishDateAsDate = null;
                 try {
                     publishDateAsDate = dateFormat.parse(publishDate);
@@ -71,31 +81,26 @@ public class BookView extends Component {
                     throw new RuntimeException(ex);
                 }
 
-                if (title.isEmpty() || genre.isEmpty() || author.isEmpty() || publisher.isEmpty() || publishDate.isEmpty() || language.isEmpty() || NumCopies_txt.getText().isEmpty() || AvailableCopies_txt.getText().isEmpty() || BorrowedCopies_txt.getText().isEmpty()) {
+                if (BookID_txt.getText().isEmpty() || title.isEmpty() || genre.isEmpty() || publisher.isEmpty() || publishDate.isEmpty() || language.isEmpty() || NumCopies_txt.getText().isEmpty() || AvailableCopies_txt.getText().isEmpty() || BorrowedCopies_txt.getText().isEmpty()) {
                     JOptionPane.showMessageDialog(Mainpanel, "One or more fields are invalid.", "Invalid Fields", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    dbConnection.insertBook(title, genre, publisher, publishDate, language, numCopies,
-                            availableCopies, borrowedCopies, getAuthorId(author));
-
+                    dbConnection.insertBook(title, genre, publisher, publishDateAsDate, language, numCopies,
+                            availableCopies, borrowedCopies);
+                    System.out.println("Book Added");
                     DefaultTableModel model = (DefaultTableModel) ExistingBooks_tbl.getModel();
                     model.addRow(new Object[] {title, genre, author, publisher, publishDateAsDate, language, numCopies, availableCopies, borrowedCopies});
-                    Title_txt.setText("");
-                    Genre_txt.setText("");
-                    Author_txt.setText("");
-                    Publisher_txt.setText("");
-                    PublishDate_txt.setText("");
-                    Language_txt.setText("");
-                    AvailableCopies_txt.setText("");
-                    BorrowedCopies_txt.setText("");
-                    Title_txt.requestFocus();
+                    clearInputFields();
                 }
+                populateBooksTable();
 
             }
+
         });
 
         Clear_btn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
                 clearInputFields();
             }
         });
@@ -103,7 +108,7 @@ public class BookView extends Component {
         Search_btn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String idText = Title_txt.getText(); //Using book title instead of ID
+                String idText = BookID_txt.getText(); //Using book title instead of ID
 
                 if (idText.isEmpty()) {
                     JOptionPane.showMessageDialog(Mainpanel, "Please enter a book ID.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
@@ -130,6 +135,7 @@ public class BookView extends Component {
                         int availableCopies = book.getNumberOfAvailableCopies();
                         int borrowedCopies = book.getNumberOfBorrowedCopies();
                         int authorId = book.getAuthor().getId();
+                        int bookID = Integer.parseInt(BookID_txt.getText());
 
                         Title_txt.setText(title);
                         Genre_txt.setText(genre);
@@ -142,7 +148,7 @@ public class BookView extends Component {
 
                         DefaultTableModel model = (DefaultTableModel) ExistingBooks_tbl.getModel();
                         model.setRowCount(0);
-                        model.addRow(new Object[]{title, genre, publisher, publicationDate, language, numCopies, availableCopies, borrowedCopies});
+                        model.addRow(new Object[]{title, genre, publisher, publicationDate, language, numCopies, availableCopies, borrowedCopies, authorId, bookID});
 
                     } else {
                         JOptionPane.showMessageDialog(Mainpanel, "No book found with the given ID.", "No Results", JOptionPane.INFORMATION_MESSAGE);
@@ -151,13 +157,15 @@ public class BookView extends Component {
                     ex.printStackTrace();
                     JOptionPane.showMessageDialog(Mainpanel, "Error retrieving book details.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
+
+                populateBooksTable();
             }
         });
 
         Update_btn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String idText = Title_txt.getText(); //Used title instead of ID
+                String idText = BookID_txt.getText(); //Used title instead of ID
 
                 if (idText.isEmpty()) {
                     JOptionPane.showMessageDialog(Mainpanel, "Please enter a book ID to update.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
@@ -174,29 +182,32 @@ public class BookView extends Component {
 
                 String title = Title_txt.getText();
                 String genre = Genre_txt.getText();
-                String author = Author_txt.getText();
+                String author = (String) Author_cmbx.getItemAt(Author_cmbx.getSelectedIndex());
                 String publisher = Publisher_txt.getText();
                 String publicationDate = PublishDate_txt.getText();
                 String language = Language_txt.getText();
                 int numCopies = Integer.parseInt(NumCopies_txt.getText());
                 int availableCopies = Integer.parseInt(AvailableCopies_txt.getText());
                 int borrowedCopies = Integer.parseInt(BorrowedCopies_txt.getText());
+                int bookID = Integer.parseInt(BookID_txt.getText());
+
                 int authorId = getAuthorId(author);
 
-                if (title.isEmpty() || genre.isEmpty() || author.isEmpty() || publisher.isEmpty() || publicationDate.isEmpty() || language.isEmpty() || NumCopies_txt.getText().isEmpty() || AvailableCopies_txt.getText().isEmpty() || BorrowedCopies_txt.getText().isEmpty()) {
+                if (title.isEmpty() || genre.isEmpty() || author==null || author.isEmpty() || publisher.isEmpty() || publicationDate.isEmpty() || language.isEmpty() || NumCopies_txt.getText().isEmpty() || AvailableCopies_txt.getText().isEmpty() || BorrowedCopies_txt.getText().isEmpty() || BookID_txt.getText().isEmpty()) {
                     JOptionPane.showMessageDialog(Mainpanel, "One or more fields are invalid.", "Invalid Fields", JOptionPane.ERROR_MESSAGE);
                 } else {
                     dbConnection.updateBook(bookId, title, genre, publisher, publicationDate, language, numCopies, availableCopies, borrowedCopies, authorId);
                     JOptionPane.showMessageDialog(Mainpanel, "Book updated successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
                     clearInputFields();
                 }
+                populateBooksTable();
             }
         });
 
         Delete_btn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String idText = Title_txt.getText(); //Used Title instead of ID
+                String idText = BookID_txt.getText(); //Used Title instead of ID
 
                 if (idText.isEmpty()) {
                     JOptionPane.showMessageDialog(Mainpanel, "Please enter a book ID to delete.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
@@ -214,7 +225,11 @@ public class BookView extends Component {
                 dbConnection.deleteBook(bookId);
                 JOptionPane.showMessageDialog(Mainpanel, "Book deleted successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
                 clearInputFields();
+
+                populateBooksTable();
             }
+
+
         });
 
     }
@@ -228,13 +243,14 @@ public class BookView extends Component {
     private void clearInputFields() {
         Title_txt.setText("");
         Genre_txt.setText("");
-        Author_txt.setText("");
+        Author_cmbx.setSelectedItem(null);
         Publisher_txt.setText("");
         PublishDate_txt.setText("");
         Language_txt.setText("");
         NumCopies_txt.setText("");
         AvailableCopies_txt.setText("");
         BorrowedCopies_txt.setText("");
+        BookID_txt.setText("");
         Title_txt.requestFocus();
     }
 
@@ -246,6 +262,25 @@ public class BookView extends Component {
             frame.pack();
             frame.setVisible(true);
         });
+    }
+
+    private void populateBooksTable() {
+        ArrayList<BookModel> books = BookController.getBooks();
+        // Create a table model with two columns: "First Name" and "Last Name"
+        DefaultTableModel model = new DefaultTableModel(new String[]{"Title", "Author", "Publication Date"}, 0);
+
+        // Set the model to the table
+        ExistingBooks_tbl.setModel(model);
+
+        // Populate the table with books
+        for (BookModel book : books) {
+            String title = book.getTitle();
+            String author = book.getAuthor().getName() + " " + book.getAuthor().getSurname();
+            String publicationDate = book.getPublicationDate();
+
+            // Add the book's first name and last name as a row in the table
+            model.addRow(new Object[]{title, author, publicationDate});
+        }
     }
 
 }
