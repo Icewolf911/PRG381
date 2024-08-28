@@ -33,6 +33,10 @@ public class BookModel {
         this.author = author;
     }
 
+    public BookModel() {
+
+    }
+
     public String getTitle() {
         return title;
     }
