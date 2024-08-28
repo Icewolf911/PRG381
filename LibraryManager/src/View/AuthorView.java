@@ -32,9 +32,6 @@ public class AuthorView {
         tableModel = new DefaultTableModel(new String[]{"First Name", "Last Name", "Email", "Phone"}, 0);
         tblAuthors.setModel(tableModel);
         DBconnection db = new DBconnection();
-        
-
-
 
         populateAuthorTable(AuthorController.getAuthors());
 
@@ -140,10 +137,10 @@ public class AuthorView {
                 if (e.getClickCount() == 1) { // single click
                     int selectedRow = tblAuthors.getSelectedRow();
                     txtName.setText((String) tblAuthors.getValueAt(selectedRow, 0));
-                    txtSurname.setText((String) tblAuthors.getValueAt(selectedRow, 0));
-                    txtDOB.setText((String) tblAuthors.getValueAt(selectedRow, 0));
-                    txtEmail.setText((String) tblAuthors.getValueAt(selectedRow, 0));
-                    txtphone.setText((String) tblAuthors.getValueAt(selectedRow, 0));
+                    txtSurname.setText((String) tblAuthors.getValueAt(selectedRow, 1));
+                    txtDOB.setText((String) tblAuthors.getValueAt(selectedRow, 2));
+                    txtEmail.setText((String) tblAuthors.getValueAt(selectedRow, 3));
+                    txtphone.setText((String) tblAuthors.getValueAt(selectedRow, 4));
 
                 }
             }
