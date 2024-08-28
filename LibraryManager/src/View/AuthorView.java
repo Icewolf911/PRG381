@@ -1,6 +1,7 @@
 package View;
 
 import Controller.AuthorController;
+import Database.DBconnection;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -19,12 +20,16 @@ public class AuthorView {
     private JButton deleteButton;
     private JButton displayAllButton;
     private JButton editButton;
+    private JButton button1;
+    private JTextField textField1;
+    private JButton button2;
     private DefaultTableModel tableModel;
 
     public AuthorView() {
 
         tableModel = new DefaultTableModel(new String[]{"First Name", "Last Name", "Email", "Phone"}, 0);
         tblAuthors.setModel(tableModel);
+        DBconnection db = new DBconnection();
 
         createButton.addActionListener(new ActionListener() {
             @Override
@@ -42,7 +47,7 @@ public class AuthorView {
                             "Error",
                             JOptionPane.ERROR_MESSAGE);
                 }else {
-                    db.add(name, surname, dob, email, phone);
+                    AuthorController.addAuthor(name, surname, dob, email, phone);
                     JOptionPane.showConfirmDialog(Mainpanel,//weni wat om hier te doen nie -> the 'this' needs to reference an actual component, I just referenced the Mainpanel component in place of 'this'
                             "Added to db",
                             "Confirm",
@@ -51,6 +56,7 @@ public class AuthorView {
                     DefaultTableModel model = (DefaultTableModel) tblAuthors.getModel();
                     model.addRow(new Object[]{name, surname, dob, email, phone});
                 }
+
                 txtName.setText("");
                 txtSurname.setText("");
                 txtDOB.setText("");
