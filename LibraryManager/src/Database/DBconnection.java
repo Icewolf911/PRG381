@@ -103,18 +103,19 @@ public class DBconnection {
         }
     }
 
-    public void insertBook(String title, String genre, String publisher, String publicationDate, String language, int numberOfCopies, int numberOfAvailableCopies, int numberOfBorrowedCopies, int authorId) {
-        String sql = "INSERT INTO Books (title, genre, publisher, publicationDate, language, numberOfCopies, numberOfAvailableCopies, numberOfBorrowedCopies, author_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    public void insertBook(String title, String genre, String publisher, java.util.Date publicationDate, String language, int numberOfCopies, int numberOfAvailableCopies, int numberOfBorrowedCopies) {
+        java.sql.Date date = new java.sql.Date(publicationDate.getTime());
+        String sql = "INSERT INTO Books (title, genre, publisher, publicationDate, language, numberOfCopies, numberOfAvailableCopies, numberOfBorrowedCopies) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
         try (PreparedStatement pstmt = con.prepareStatement(sql)) {
             pstmt.setString(1, title);
             pstmt.setString(2, genre);
             pstmt.setString(3, publisher);
-            pstmt.setDate(4, Date.valueOf(publicationDate)); // Assuming publicationDate is in "YYYY-MM-DD" format
+            pstmt.setDate(4, date); // Assuming publicationDate is in "YYYY-MM-DD" format
             pstmt.setString(5, language);
             pstmt.setInt(6, numberOfCopies);
             pstmt.setInt(7, numberOfAvailableCopies);
             pstmt.setInt(8, numberOfBorrowedCopies);
-            pstmt.setInt(9, authorId);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
