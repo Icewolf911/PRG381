@@ -18,7 +18,7 @@ public class AuthorView {
     private JTable tblAuthors;
     private JButton createButton;
     private JButton deleteButton;
-    private JButton displayAllButton;
+    private JButton ClearButton;
     private JButton editButton;
     private JButton button1;
     private JTextField textField1;
@@ -42,13 +42,18 @@ public class AuthorView {
                 String phone = txtphone.getText();
 
                 if (name.isEmpty() || surname.isEmpty() || dob.isEmpty() || email.isEmpty() || phone.isEmpty()){
-                    JOptionPane.showConfirmDialog(Mainpanel,//weni wat om hier te doen nie -> the 'this' needs to reference an actual component, I just referenced the Mainpanel component in place of 'this'
+                    JOptionPane.showConfirmDialog(Mainpanel,
                             "Enter all fields",
                             "Error",
                             JOptionPane.ERROR_MESSAGE);
                 }else {
+<<<<<<< Updated upstream
                     AuthorController.addAuthor(name, surname, dob, email, phone);
                     JOptionPane.showConfirmDialog(Mainpanel,//weni wat om hier te doen nie -> the 'this' needs to reference an actual component, I just referenced the Mainpanel component in place of 'this'
+=======
+                    db.add(name, surname, dob, email, phone);
+                    JOptionPane.showConfirmDialog(Mainpanel,
+>>>>>>> Stashed changes
                             "Added to db",
                             "Confirm",
                             JOptionPane.ERROR_MESSAGE);
@@ -66,22 +71,15 @@ public class AuthorView {
             public static AuthorController db = new AuthorController();
 
         });
-        displayAllButton.addActionListener(new ActionListener() {
+        ClearButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                DefaultTableModel model = (DefaultTableModel) tblAuthors.getModel();
-
-                for (String[] row : db.view()){
-                    model.addRow(row);
-                }
                 txtName.setText("");
                 txtSurname.setText("");
                 txtDOB.setText("");
                 txtEmail.setText("");
                 txtphone.setText("");
             }
-            public static AuthorController db = new AuthorController();
-
         });
 
 
