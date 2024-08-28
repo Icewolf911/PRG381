@@ -236,9 +236,6 @@ public class DBconnection {
         return null;
     }
 
-
-
-
     public List<BookModel> getBorrowedBooksByBorrowerId(int borrowerId) {
         List<BookModel> borrowedBooks = new ArrayList<>();
         String sql = "SELECT * FROM BorrowedBooks WHERE borrower_id = ?";
