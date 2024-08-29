@@ -7,11 +7,12 @@ import Model.PersonModel;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 
 public class AuthorView {
-    private JPanel Mainpanel;
+    public JPanel Mainpanel;
     private JTextField txtName;
     private JTextField txtSurname;
     private JTextField txtDOB;
@@ -50,7 +51,7 @@ public class AuthorView {
                     JOptionPane.showConfirmDialog(Mainpanel,
                             "Enter all fields",
                             "Error",
-                            JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.INFORMATION_MESSAGE);
                 }else {
 
 
@@ -58,7 +59,7 @@ public class AuthorView {
                     JOptionPane.showConfirmDialog(Mainpanel,//weni wat om hier te doen nie -> the 'this' needs to reference an actual component, I just referenced the Mainpanel component in place of 'this'
                             "Added to db",
                             "Confirm",
-                            JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.INFORMATION_MESSAGE);
 
                     DefaultTableModel model = (DefaultTableModel) tblAuthors.getModel();
                     populateAuthorTable(AuthorController.getAuthors());
@@ -97,7 +98,9 @@ public class AuthorView {
 
                 // Remove the selected row from the table
                 DefaultTableModel model = (DefaultTableModel) tblAuthors.getModel();
-                model.removeRow(selectedRow);
+                int id = (int) tblAuthors.getValueAt(selectedRow, 5);
+                AuthorController.deleteAuthor(id);
+                populateAuthorTable(AuthorController.getAuthors());
                 txtName.setText("");
                 txtSurname.setText("");
                 txtDOB.setText("");
@@ -115,12 +118,9 @@ public class AuthorView {
                         String dob = txtDOB.getText();
                         String email = txtEmail.getText();
                         String phone = txtphone.getText();
-
-                        tableModel.setValueAt(name, selectedRow, 0);
-                        tableModel.setValueAt(surname, selectedRow, 1);
-                        tableModel.setValueAt(dob, selectedRow, 2);
-                        tableModel.setValueAt(email, selectedRow, 3);
-                        tableModel.setValueAt(phone, selectedRow, 4);
+                        int id = (int) tblAuthors.getValueAt(selectedRow, 5);
+                        AuthorController.editAuthor(id, name, surname, dob, email, phone);
+                        populateAuthorTable(AuthorController.getAuthors());
                     }
                 txtName.setText("");
                 txtSurname.setText("");
@@ -134,37 +134,22 @@ public class AuthorView {
         tblAuthors.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
-                if (e.getClickCount() == 1) { // single click
-
-                    int selectedRow = tblAuthors.getSelectedRow();
-
-                    if (selectedRow != -1) {
-                        txtName.setText((String) tblAuthors.getValueAt(selectedRow, 0));
-                        txtSurname.setText((String) tblAuthors.getValueAt(selectedRow, 1));
-                        txtDOB.setText((String) tblAuthors.getValueAt(selectedRow, 2));
-                        txtEmail.setText((String) tblAuthors.getValueAt(selectedRow, 3));
-                        txtphone.setText((String) tblAuthors.getValueAt(selectedRow, 4));
-                    }
-
-
-                }
-            }
-        });
-        searchButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
 
             }
         });
         searchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
                 ArrayList<AuthorModel> authors = AuthorController.getAuthors();
                 ArrayList<AuthorModel> result = new ArrayList<>();
                 for (AuthorModel author: authors) {
-                    if (author.getName().contains(Search_txt.getText())||author.getSurname().contains(Search_txt.getText())||author.getEmail().contains(Search_txt.getText())){
+                    String name = author.getName().toLowerCase();
+                    String surname = author.getSurname().toLowerCase();
+                    String email = author.getEmail().toLowerCase();
+                    String nameSearch = Search_txt.getText().toLowerCase();
+                    String surnameSearch = Search_txt.getText().toLowerCase();
+                    String emailSearch = Search_txt.getText().toLowerCase();
+                    if (name.contains(nameSearch)||surname.contains(surnameSearch)||email.contains(emailSearch)){
                         result.add(author);
                     }
                 }
@@ -172,16 +157,25 @@ public class AuthorView {
 
             }
         });
-    }
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Author View");
-            frame.setContentPane(new AuthorView().Mainpanel);
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.pack();
-            frame.setVisible(true);
+        homeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+
+            }
         });
     }
+
+
+//    public static void main(String[] args) {
+//        SwingUtilities.invokeLater(() -> {
+//            JFrame frame = new JFrame("Author View");
+//            frame.setContentPane(new AuthorView().Mainpanel);
+//            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//            frame.pack();
+//            frame.setVisible(true);
+//        });
+//    }
     private void populateAuthorTable(ArrayList<AuthorModel> authors) {
 
         // Create a table model with two columns: "First Name" and "Last Name"
