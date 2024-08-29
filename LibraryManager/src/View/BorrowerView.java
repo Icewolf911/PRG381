@@ -35,6 +35,7 @@ public class BorrowerView extends JFrame {
     private DefaultTableModel tableModel;
 
     public BorrowerView() {
+
         // Initialize the table model and set it for the table
         tableModel = new DefaultTableModel(new String[]{"First Name", "Last Name","DOB", "Email", "Phone","id"}, 0);
         tableBorrowers.setModel(tableModel);
@@ -128,13 +129,7 @@ public class BorrowerView extends JFrame {
         });
     }
 
-    public static void GoToBorrowerView() {
-        JFrame frame = new JFrame("Borrower View");
-        frame.setContentPane(new BorrowerView().MainPannel);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setVisible(true);
-    }
+
     private void addBorrower() {
         String firstName = txtFirstName.getText();
         String lastName = txtLastName.getText();
