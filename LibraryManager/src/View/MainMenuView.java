@@ -32,6 +32,9 @@ public class MainMenuView extends JDialog {
         DBconnection db = new DBconnection();
         db.connect();
         db.createTables();
+        db.clearDatabase();
+        db.populateTablesWithDummyData();
+        db.populateTablesWithDummyData();
         populateAuthorTable();
         populateBooksTable();
 
@@ -40,20 +43,21 @@ public class MainMenuView extends JDialog {
     }
 
     private void populateAuthorTable() {
-        ArrayList<PersonModel> authors = AuthorController.getAuthors();
+        ArrayList<AuthorModel> authors = AuthorController.getAuthors();
         // Create a table model with two columns: "First Name" and "Last Name"
-        DefaultTableModel model = new DefaultTableModel(new String[]{"First Name", "Last Name"}, 0);
+        DefaultTableModel model = new DefaultTableModel(new String[]{"ID","First Name", "Last Name"}, 0);
 
         // Set the model to the table
         author_tbl.setModel(model);
 
         // Populate the table with authors
-        for (PersonModel author : authors) {
+        for (AuthorModel author : authors) {
             String firstName = author.getName();
             String lastName = author.getSurname();
+            int id = author.getId();
 
             // Add the author's first name and last name as a row in the table
-            model.addRow(new Object[]{firstName, lastName});
+            model.addRow(new Object[]{id,firstName, lastName});
         }
     }
 
