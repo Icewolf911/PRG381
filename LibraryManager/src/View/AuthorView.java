@@ -134,6 +134,13 @@ public class AuthorView {
         tblAuthors.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                int selectedRow = tblAuthors.getSelectedRow();
+                txtName.setText(tblAuthors.getValueAt(selectedRow, 0).toString());
+                txtSurname.setText(tblAuthors.getValueAt(selectedRow, 1).toString());
+                txtDOB.setText(tblAuthors.getValueAt(selectedRow, 2).toString());
+                txtEmail.setText(tblAuthors.getValueAt(selectedRow, 3).toString());
+                txtphone.setText(tblAuthors.getValueAt(selectedRow, 4).toString());
 
             }
         });
