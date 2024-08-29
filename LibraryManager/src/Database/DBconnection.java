@@ -5,6 +5,8 @@ import Model.BookModel;
 import Model.PersonModel;
 
 import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -187,11 +189,23 @@ public class DBconnection {
     public void insertBorrowedBook(int bookId, int borrowerId, String borrowDate, String returnDate) {
         String sql = "INSERT INTO BorrowedBooks (book_id, borrower_id, borrowDate, returnDate,id) VALUES (?, ?, ?, ?," +
                 "?)";
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        java.util.Date borrowDateJ = null;
+        java.util.Date returnDateJ = null;
+
+        try {
+            borrowDateJ = dateFormat.parse(borrowDate);
+            returnDateJ = dateFormat.parse(returnDate);
+        } catch (ParseException ex) {
+            throw new RuntimeException(ex);
+        }
+        java.sql.Date borrowDateS = new java.sql.Date(borrowDateJ.getTime());
+        java.sql.Date returnDateS = new java.sql.Date(returnDateJ.getTime());
         try (PreparedStatement pstmt = con.prepareStatement(sql)) {
             pstmt.setInt(1, bookId);
             pstmt.setInt(2, borrowerId);
-            pstmt.setDate(3, Date.valueOf(borrowDate)); // Assuming borrowDate is in "YYYY-MM-DD" format
-            pstmt.setDate(4, Date.valueOf(returnDate)); // Assuming returnDate is in "YYYY-MM-DD" format
+            pstmt.setDate(3, borrowDateS); // Assuming borrowDate is in "YYYY-MM-DD" format
+            pstmt.setDate(4, returnDateS); // Assuming returnDate is in "YYYY-MM-DD" format
             pstmt.setInt(5, getLastInsertedBorrowedBookId() + 1); // Get the last inserted ID and increment by 1
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -295,8 +309,8 @@ public class DBconnection {
         return null;
     }
 
-    public List<BookModel> getBorrowedBooksByBorrowerId(int borrowerId) {
-        List<BookModel> borrowedBooks = new ArrayList<>();
+    public ArrayList<BookModel> getBorrowedBooksByBorrowerId(int borrowerId) {
+        ArrayList<BookModel> borrowedBooks = new ArrayList<>();
         String sql = "SELECT * FROM BorrowedBooks WHERE borrower_id = ?";
 
         try (PreparedStatement pstmt = con.prepareStatement(sql)) {
@@ -385,10 +399,11 @@ public class DBconnection {
     }
 
 
-    public void deleteBorrowedBook(int id) {
-        String sql = "DELETE FROM BorrowedBooks WHERE id = ?";
+    public void deleteBorrowedBook(int book_id ,int borrower_id) {
+        String sql = "DELETE FROM BorrowedBooks WHERE book_id = ? AND borrower_id = ?";
         try (PreparedStatement pstmt = con.prepareStatement(sql)) {
-            pstmt.setInt(1, id);
+            pstmt.setInt(1, book_id);
+            pstmt.setInt(2, borrower_id);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

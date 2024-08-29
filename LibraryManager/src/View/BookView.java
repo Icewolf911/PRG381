@@ -7,7 +7,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.sql.SQLOutput;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -47,6 +46,7 @@ public class BookView extends Component {
     private JButton Search_btn;
     private JComboBox Author_cmbx;
     private JTextField BookID_txt;
+    private JButton btnHome;
 
 
     public BookView(){
@@ -278,13 +278,14 @@ public class BookView extends Component {
 
             }
         });
+        btnHome.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
     }
 
-    private int getAuthorId(String authorName) {
-        // Logic to fetch author ID based on authorName from the database
-        // This is to be used for CRUD operations
-        return 1;
-    }
 
     private void clearInputFields() {
         Title_txt.setText("");
@@ -300,15 +301,15 @@ public class BookView extends Component {
         Title_txt.requestFocus();
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Book View");
-            frame.setContentPane(new BookView().Mainpanel);
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.pack();
-            frame.setVisible(true);
-        });
-    }
+//    public static void main(String[] args) {
+//        SwingUtilities.invokeLater(() -> {
+//            JFrame frame = new JFrame("Book View");
+//            frame.setContentPane(new BookView().Mainpanel);
+//            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//            frame.pack();
+//            frame.setVisible(true);
+//        });
+//    }
 
     private void populateBooksTable() {
         ArrayList<BookModel> books = BookController.getBooks();
