@@ -12,9 +12,11 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import Controller.AuthorController;
+import app.MainClass;
+import org.apache.derby.impl.tools.ij.Main;
 
 public class MainMenuView extends JDialog {
-    private JPanel contentPane;
+    public JPanel contentPane;
     private JButton addAuthor_btn;
     private JButton addBook_btn;
     private JTable author_tbl;
@@ -39,8 +41,30 @@ public class MainMenuView extends JDialog {
         populateBooksTable();
 
 
+        addAuthor_btn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
 
+
+            }
+        });
+        addBook_btn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+        borrowBook_btn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+
+                dispose();
+            }
+        });
     }
+
+
 
     private void populateAuthorTable() {
         ArrayList<AuthorModel> authors = AuthorController.getAuthors();
@@ -80,16 +104,13 @@ public class MainMenuView extends JDialog {
         }
     }
 
-    public static void main(String[] args) {
-        MainMenuView dialog = new MainMenuView();
-        dialog.setPreferredSize(new Dimension(800,400));
-        dialog.pack();
-
-        dialog.setVisible(true);
-
-
-        System.exit(0);
-    }
+//    public static void main(String[] args) {
+//        MainMenuView dialog = new MainMenuView();
+//        dialog.setPreferredSize(new Dimension(800,400));
+//        dialog.pack();
+//        dialog.setVisible(true);
+//        System.exit(0);
+//    }
 
 
 }

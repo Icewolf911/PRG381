@@ -10,6 +10,7 @@ public class BookModel {
     private int numberOfAvailableCopies;
     private int numberOfBorrowedCopies;
     private AuthorModel author;
+    private int id;
 
     public BookModel(String title, String isbn, String genre, String publisher, String publicationDate, String language, int numberOfPages, int numberOfCopies, int numberOfAvailableCopies, int numberOfBorrowedCopies, int numberOfReservedCopies, AuthorModel author) {
         this.title = title;
@@ -109,5 +110,12 @@ public class BookModel {
 
     public void setAuthor(AuthorModel author) {
         this.author = author;
+    }
+
+    public int getId() {
+        return id;
+    }
+    public void setId(int id) {
+        this.id = id;
     }
 }
