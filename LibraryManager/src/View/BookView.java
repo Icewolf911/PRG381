@@ -258,7 +258,8 @@ public class BookView extends Component {
                         AvailableCopies_txt.setText(ExistingBooks_tbl.getValueAt(selectedRow, 7).toString());
                         BorrowedCopies_txt.setText(ExistingBooks_tbl.getValueAt(selectedRow, 8).toString());
                         BookID_txt.setText(ExistingBooks_tbl.getValueAt(selectedRow, 9).toString());
-                        int authorId = (int) ExistingBooks_tbl.getValueAt(selectedRow, 9);
+                        int authorId =
+                                dbConnection.getBookById((int) ExistingBooks_tbl.getValueAt(selectedRow, 9)).getAuthor().getId() ;
 
                         String authorFullNameAndID =
                                 authorId +" "+ AuthorController.getAuthorById(authorId).getName() + " " +
