@@ -5,7 +5,23 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c3458fa0-18ab-44bd-8083-ac1c00f7750c" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/LibraryManager/src/View/AuthorView.java" beforeDir="false" afterPath="$PROJECT_DIR$/LibraryManager/src/View/AuthorView.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LibraryManager/src/View/BookView.form" beforeDir="false" afterPath="$PROJECT_DIR$/LibraryManager/src/View/BookView.form" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LibraryManager/src/View/BookView.java" beforeDir="false" afterPath="$PROJECT_DIR$/LibraryManager/src/View/BookView.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LibraryManager/src/View/BorrowerView.form" beforeDir="false" afterPath="$PROJECT_DIR$/LibraryManager/src/View/BorrowerView.form" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/PRG381/Controller/AuthorController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/PRG381/Controller/BookController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/PRG381/Controller/BorrowerController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/PRG381/Main.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/PRG381/Model/AuthorModel.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/PRG381/Model/BookModel.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/PRG381/Model/BorrowerModel.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/PRG381/Model/PersonModel.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/PRG381/View/AuthorView.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/PRG381/View/BookView.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/PRG381/View/BorrowerView.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/PRG381/View/MainMenuView.class" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,7 +47,7 @@
   <component name="GithubPullRequestsUISettings"><![CDATA[{
   "selectedUrlAndAccountId": {
     "url": "https://github.com/Icewolf911/PRG381.git",
-    "accountId": "c98647c5-1285-468e-9b8b-1666d9978bbe"
+    "accountId": "2cef6263-bc27-466b-b20b-f29213b24721"
   }
 }]]></component>
   <component name="ProjectColorInfo">{
@@ -44,9 +60,10 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "Application.Main.executor": "Run",
+    "Application.Main.executor": "Coverage",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "Conrad",
+    "UI_DESIGNER_EDITOR_MODE.UIDesignerToolWindowManager.WIDTH": "299",
+    "git-widget-placeholder": "Justin",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "D:/Documents/Belgium 3/PRG381/PRG381/LibraryManager/lib/derbytools.jar",
     "nodejs_package_manager_path": "npm",
