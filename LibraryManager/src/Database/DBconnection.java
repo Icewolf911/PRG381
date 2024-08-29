@@ -27,7 +27,7 @@ public class DBconnection {
 
     public void createTables() {
         String createPeopleTable = "CREATE TABLE People (" +
-                "id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
+                "id INT PRIMARY KEY , " +
                 "name VARCHAR(255) NOT NULL, " +
                 "surname VARCHAR(255) NOT NULL, " +
                 "dateOfBirth DATE, " +
@@ -38,7 +38,7 @@ public class DBconnection {
                 ")";
 
         String createBooksTable = "CREATE TABLE Books (" +
-                "id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
+                "id INT PRIMARY KEY , " +
                 "title VARCHAR(255) NOT NULL, " +
                 "genre VARCHAR(255), " +
                 "publisher VARCHAR(255), " +
@@ -52,7 +52,7 @@ public class DBconnection {
                 ")";
 
         String createBorrowedBooksTable = "CREATE TABLE BorrowedBooks (" +
-                "id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
+                "id INT PRIMARY KEY , " +
                 "book_id INT, " +
                 "borrower_id INT, " +
                 "borrowDate DATE, " +
@@ -86,26 +86,70 @@ public class DBconnection {
         }
     }
 
+    public void clearDatabase() {
+        try (Statement stmt = con.createStatement()) {
+            // Disable foreign key constraints
+            stmt.execute("SET CONSTRAINTS ALL DEFERRED");
+
+            // Delete data from tables
+            stmt.execute("DELETE FROM BorrowedBooks");
+            stmt.execute("DELETE FROM Books");
+            stmt.execute("DELETE FROM People");
+
+            // Drop and recreate tables to reset identity columns
+            stmt.execute("DROP TABLE BorrowedBooks");
+            stmt.execute("DROP TABLE Books");
+            stmt.execute("DROP TABLE People");
+
+            createTables(); // Call the method to recreate the tables
+
+            System.out.println("Database cleared");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void insertPerson(String name, String surname, String dateOfBirth, String email, String phone, boolean isAuthor, boolean isBorrower) {
-        String sql = "INSERT INTO People (name, surname, dateOfBirth, email, phone, isAuthor, isBorrower) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+        String sql = "INSERT INTO People (id,name, surname, dateOfBirth, email, phone, isAuthor, isBorrower) VALUES " +
+                "(?,?, ?, ?, ?, ?, ?, ?)";
+
         try (PreparedStatement pstmt = con.prepareStatement(sql)) {
-            pstmt.setString(1, name);
-            pstmt.setString(2, surname);
-            pstmt.setDate(3, Date.valueOf(dateOfBirth)); // Assuming dateOfBirth is in "YYYY-MM-DD" format
-            pstmt.setString(4, email);
-            pstmt.setString(5, phone);
-            pstmt.setBoolean(6, isAuthor);
-            pstmt.setBoolean(7, isBorrower);
+            pstmt.setInt(1, getLastInsertedPersonId() + 1); // Get the last inserted ID and increment by 1
+            pstmt.setString(2, name);
+            pstmt.setString(3, surname);
+            pstmt.setDate(4, Date.valueOf(dateOfBirth)); // Assuming dateOfBirth is in "YYYY-MM-DD" format
+            pstmt.setString(5, email);
+            pstmt.setString(6, phone);
+            pstmt.setBoolean(7, isAuthor);
+            pstmt.setBoolean(8, isBorrower);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void insertBook(String title, String genre, String publisher, java.util.Date publicationDate, String language, int numberOfCopies, int numberOfAvailableCopies, int numberOfBorrowedCopies) {
+    public int getLastInsertedPersonId() {
+        String sql = "SELECT MAX(id) FROM People";
+        try (PreparedStatement pstmt = con.prepareStatement(sql)) {
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1); // Return the maximum id value
+                } else {
+                    return -1; // Return -1 if no rows are found
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1; // Return -1 if an error occurs
+        }
+    }
+
+    public void insertBook(String title, String genre, String publisher, java.util.Date publicationDate,
+                           String language, int numberOfCopies, int numberOfAvailableCopies, int numberOfBorrowedCopies, int authorId) {
         java.sql.Date date = new java.sql.Date(publicationDate.getTime());
-        String sql = "INSERT INTO Books (title, genre, publisher, publicationDate, language, numberOfCopies, numberOfAvailableCopies, numberOfBorrowedCopies) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Books (title, genre, publisher, publicationDate, language, numberOfCopies, " +
+                "numberOfAvailableCopies, numberOfBorrowedCopies,author_id) VALUES ( ?, ?, ?, ?, ?, ?,?,?,?)";
 
         try (PreparedStatement pstmt = con.prepareStatement(sql)) {
             pstmt.setString(1, title);
@@ -116,9 +160,25 @@ public class DBconnection {
             pstmt.setInt(6, numberOfCopies);
             pstmt.setInt(7, numberOfAvailableCopies);
             pstmt.setInt(8, numberOfBorrowedCopies);
+            pstmt.setInt(9, authorId); // Assuming author ID is 1
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+    public int getLastInsertedBookId() {
+        String sql = "SELECT MAX(id) FROM Books";
+        try (PreparedStatement pstmt = con.prepareStatement(sql)) {
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1); // Return the maximum id value
+                } else {
+                    return -1; // Return -1 if no rows are found
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1; // Return -1 if an error occurs
         }
     }
 
@@ -133,6 +193,21 @@ public class DBconnection {
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+    public int getLastInsertedBorrowedBookId() {
+        String sql = "SELECT MAX(id) FROM BorrowedBooks";
+        try (PreparedStatement pstmt = con.prepareStatement(sql)) {
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1); // Return the maximum id value
+                } else {
+                    return -1; // Return -1 if no rows are found
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1; // Return -1 if an error occurs
         }
     }
 
@@ -175,11 +250,13 @@ public class DBconnection {
                 String dateOfBirth = rs.getString("dateOfBirth"); // Assuming dateOfBirth is stored as a string
                 String email = rs.getString("email");
                 String phone = rs.getString("phone");
+                int id = rs.getInt("id");
 
                 // Assuming PersonModel has a constructor that takes all these fields
                 PersonModel person = new PersonModel(name, surname, dateOfBirth, email, phone);
                 person.setAuthor(rs.getBoolean("isAuthor"));
                 person.setBorrower(rs.getBoolean("isBorrower"));
+                person.setId(id);
                 people.add(person);
             }
 
@@ -204,6 +281,7 @@ public class DBconnection {
                 author.setDateOfBirth(rs.getDate("dateOfBirth").toString()); // Assuming you want a String format
                 author.setEmail(rs.getString("email"));
                 author.setPhone(rs.getString("phone"));
+                author.setId(rs.getInt("id"));
                 // Add other fields as necessary
 
                 return author;
@@ -213,9 +291,6 @@ public class DBconnection {
         }
         return null;
     }
-
-
-
 
     public List<BookModel> getBorrowedBooksByBorrowerId(int borrowerId) {
         List<BookModel> borrowedBooks = new ArrayList<>();
@@ -370,9 +445,12 @@ public class DBconnection {
     }
 
     public void populateTablesWithDummyData() {
-        String insertPeople = "INSERT INTO People (name, surname, dateOfBirth, email, phone, isAuthor, isBorrower) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        String insertBooks = "INSERT INTO Books (title, genre, publisher, publicationDate, language, numberOfCopies, numberOfAvailableCopies, numberOfBorrowedCopies, author_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        String insertBorrowedBooks = "INSERT INTO BorrowedBooks (book_id, borrower_id, borrowDate, returnDate) VALUES (?, ?, ?, ?)";
+        String insertPeople = "INSERT INTO People (name, surname, dateOfBirth, email, phone, isAuthor, isBorrower,id)" +
+                " VALUES (?, ?, ?, ?, ?, ?, ?,?)";
+        String insertBooks = "INSERT INTO Books (title, genre, publisher, publicationDate, language, numberOfCopies, " +
+                "numberOfAvailableCopies, numberOfBorrowedCopies, author_id,id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
+        String insertBorrowedBooks = "INSERT INTO BorrowedBooks (book_id, borrower_id, borrowDate, returnDate,id) " +
+                "VALUES (?, ?, ?, ?,?)";
 
         try (PreparedStatement pstmtPeople = con.prepareStatement(insertPeople);
              PreparedStatement pstmtBooks = con.prepareStatement(insertBooks);
@@ -386,6 +464,7 @@ public class DBconnection {
             pstmtPeople.setString(5, "123-456-7890");
             pstmtPeople.setBoolean(6, true);  // Example author
             pstmtPeople.setBoolean(7, false);
+            pstmtPeople.setInt(8, getLastInsertedPersonId()+1);
             pstmtPeople.executeUpdate();
 
             pstmtPeople.setString(1, "Jane");
@@ -394,7 +473,8 @@ public class DBconnection {
             pstmtPeople.setString(4, "jane.smith@example.com");
             pstmtPeople.setString(5, "098-765-4321");
             pstmtPeople.setBoolean(6, false);
-            pstmtPeople.setBoolean(7, true);  // Example borrower
+            pstmtPeople.setBoolean(7, true);
+            pstmtPeople.setInt(8, getLastInsertedPersonId()+1);// Example borrower
             pstmtPeople.executeUpdate();
 
             // Assume we know the IDs of the inserted people (this is simplified)
@@ -411,6 +491,7 @@ public class DBconnection {
             pstmtBooks.setInt(7, 8);
             pstmtBooks.setInt(8, 2);
             pstmtBooks.setInt(9, authorId);
+            pstmtBooks.setInt(10, getLastInsertedBookId()+1);
             pstmtBooks.executeUpdate();
 
             pstmtBooks.setString(1, "Learning Java");
@@ -422,6 +503,7 @@ public class DBconnection {
             pstmtBooks.setInt(7, 5);
             pstmtBooks.setInt(8, 0);
             pstmtBooks.setInt(9, authorId);
+            pstmtBooks.setInt(10, getLastInsertedBookId()+1);
             pstmtBooks.executeUpdate();
 
             // Assume we know the IDs of the inserted books (this is simplified)
@@ -433,6 +515,7 @@ public class DBconnection {
             pstmtBorrowedBooks.setInt(2, borrowerId);
             pstmtBorrowedBooks.setDate(3, Date.valueOf("2024-08-01"));
             pstmtBorrowedBooks.setDate(4, Date.valueOf("2024-08-15"));
+            pstmtBorrowedBooks.setInt(5, getLastInsertedBorrowedBookId()+1);
             pstmtBorrowedBooks.executeUpdate();
 
             System.out.println("Tables populated with dummy data");
