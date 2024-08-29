@@ -57,18 +57,14 @@ public class MainMenuView extends JDialog {
         borrowBook_btn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                
+
+
+                dispose();
             }
         });
     }
 
-    public void goToAuthorView() {
-        JFrame mainFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
-        mainFrame.getContentPane().removeAll();
-        mainFrame.getContentPane().add(new AuthorView().Mainpanel);
-        mainFrame.revalidate();
-        mainFrame.repaint();
-    }
+
 
     private void populateAuthorTable() {
         ArrayList<AuthorModel> authors = AuthorController.getAuthors();

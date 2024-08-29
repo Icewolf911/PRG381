@@ -9,7 +9,7 @@ import javax.swing.*;
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class MainClass {
-    public static JFrame mainFrame = new JFrame("app.Main Application");
+    public static JFrame mainFrame = new JFrame("Main Application");
 
     public static void main(String[] args) {
 
