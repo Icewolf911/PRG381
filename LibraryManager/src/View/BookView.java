@@ -38,7 +38,6 @@ public class BookView extends Component {
     private JPanel EB_Panel;
     private JPanel EB_Header;
     private JTable ExistingBooks_tbl;
-    private JPanel LeftBuffer;
     private JPanel BottomBuffer;
     private JPanel Mainpanel;
     private JButton Update_btn;
