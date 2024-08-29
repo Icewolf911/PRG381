@@ -9,6 +9,10 @@ public class BorrowerModel extends PersonModel{
         super(name, surname, dateOfBirth, email, phone);
     }
 
+    public BorrowerModel(PersonModel person) {
+        super(person.getName(), person.getSurname(), person.getDateOfBirth(), person.getEmail(), person.getPhone());
+    }
+
     public List<BookModel> getBorrowedBooks() {
         return borrowedBooks;
     }

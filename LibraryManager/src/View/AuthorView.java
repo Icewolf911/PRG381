@@ -7,11 +7,12 @@ import Model.PersonModel;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 
 public class AuthorView {
-    private JPanel Mainpanel;
+    public JPanel Mainpanel;
     private JTextField txtName;
     private JTextField txtSurname;
     private JTextField txtDOB;
@@ -133,21 +134,7 @@ public class AuthorView {
         tblAuthors.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
-                if (e.getClickCount() == 1) { // single click
 
-                    int selectedRow = tblAuthors.getSelectedRow();
-
-                    if (selectedRow != -1) {
-                        txtName.setText((String) tblAuthors.getValueAt(selectedRow, 0));
-                        txtSurname.setText((String) tblAuthors.getValueAt(selectedRow, 1));
-                        txtDOB.setText((String) tblAuthors.getValueAt(selectedRow, 2));
-                        txtEmail.setText((String) tblAuthors.getValueAt(selectedRow, 3));
-                        txtphone.setText((String) tblAuthors.getValueAt(selectedRow, 4));
-                    }
-
-
-                }
             }
         });
         searchButton.addActionListener(new ActionListener() {
@@ -170,16 +157,25 @@ public class AuthorView {
 
             }
         });
-    }
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Author View");
-            frame.setContentPane(new AuthorView().Mainpanel);
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.pack();
-            frame.setVisible(true);
+        homeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+
+            }
         });
     }
+
+
+//    public static void main(String[] args) {
+//        SwingUtilities.invokeLater(() -> {
+//            JFrame frame = new JFrame("Author View");
+//            frame.setContentPane(new AuthorView().Mainpanel);
+//            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//            frame.pack();
+//            frame.setVisible(true);
+//        });
+//    }
     private void populateAuthorTable(ArrayList<AuthorModel> authors) {
 
         // Create a table model with two columns: "First Name" and "Last Name"

@@ -5,6 +5,8 @@ import Model.BookModel;
 import Model.PersonModel;
 
 import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -185,12 +187,26 @@ public class DBconnection {
 
 
     public void insertBorrowedBook(int bookId, int borrowerId, String borrowDate, String returnDate) {
-        String sql = "INSERT INTO BorrowedBooks (book_id, borrower_id, borrowDate, returnDate) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO BorrowedBooks (book_id, borrower_id, borrowDate, returnDate,id) VALUES (?, ?, ?, ?," +
+                "?)";
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        java.util.Date borrowDateJ = null;
+        java.util.Date returnDateJ = null;
+
+        try {
+            borrowDateJ = dateFormat.parse(borrowDate);
+            returnDateJ = dateFormat.parse(returnDate);
+        } catch (ParseException ex) {
+            throw new RuntimeException(ex);
+        }
+        java.sql.Date borrowDateS = new java.sql.Date(borrowDateJ.getTime());
+        java.sql.Date returnDateS = new java.sql.Date(returnDateJ.getTime());
         try (PreparedStatement pstmt = con.prepareStatement(sql)) {
             pstmt.setInt(1, bookId);
             pstmt.setInt(2, borrowerId);
-            pstmt.setDate(3, Date.valueOf(borrowDate)); // Assuming borrowDate is in "YYYY-MM-DD" format
-            pstmt.setDate(4, Date.valueOf(returnDate)); // Assuming returnDate is in "YYYY-MM-DD" format
+            pstmt.setDate(3, borrowDateS); // Assuming borrowDate is in "YYYY-MM-DD" format
+            pstmt.setDate(4, returnDateS); // Assuming returnDate is in "YYYY-MM-DD" format
+            pstmt.setInt(5, getLastInsertedBorrowedBookId() + 1); // Get the last inserted ID and increment by 1
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -293,8 +309,8 @@ public class DBconnection {
         return null;
     }
 
-    public List<BookModel> getBorrowedBooksByBorrowerId(int borrowerId) {
-        List<BookModel> borrowedBooks = new ArrayList<>();
+    public ArrayList<BookModel> getBorrowedBooksByBorrowerId(int borrowerId) {
+        ArrayList<BookModel> borrowedBooks = new ArrayList<>();
         String sql = "SELECT * FROM BorrowedBooks WHERE borrower_id = ?";
 
         try (PreparedStatement pstmt = con.prepareStatement(sql)) {
@@ -383,10 +399,11 @@ public class DBconnection {
     }
 
 
-    public void deleteBorrowedBook(int id) {
-        String sql = "DELETE FROM BorrowedBooks WHERE id = ?";
+    public void deleteBorrowedBook(int book_id ,int borrower_id) {
+        String sql = "DELETE FROM BorrowedBooks WHERE book_id = ? AND borrower_id = ?";
         try (PreparedStatement pstmt = con.prepareStatement(sql)) {
-            pstmt.setInt(1, id);
+            pstmt.setInt(1, book_id);
+            pstmt.setInt(2, borrower_id);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -458,88 +475,27 @@ public class DBconnection {
     }
 
     public void populateTablesWithDummyData() {
-//        String insertPeople = "INSERT INTO People (name, surname, dateOfBirth, email, phone, isAuthor, isBorrower,id)" +
-//                " VALUES (?, ?, ?, ?, ?, ?, ?,?)";
-//        String insertBooks = "INSERT INTO Books (title, genre, publisher, publicationDate, language, numberOfCopies, " +
-//                "numberOfAvailableCopies, numberOfBorrowedCopies, author_id,id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
-//        String insertBorrowedBooks = "INSERT INTO BorrowedBooks (book_id, borrower_id, borrowDate, returnDate,id) " +
-//                "VALUES (?, ?, ?, ?,?)";
-//
-//        try (PreparedStatement pstmtPeople = con.prepareStatement(insertPeople);
-//             PreparedStatement pstmtBooks = con.prepareStatement(insertBooks);
-//             PreparedStatement pstmtBorrowedBooks = con.prepareStatement(insertBorrowedBooks)) {
-//
-//            // Insert dummy records into People
-//            pstmtPeople.setString(1, "John");
-//            pstmtPeople.setString(2, "Doe");
-//            pstmtPeople.setDate(3, Date.valueOf("1980-01-01"));
-//            pstmtPeople.setString(4, "john.doe@example.com");
-//            pstmtPeople.setString(5, "123-456-7890");
-//            pstmtPeople.setBoolean(6, true);  // Example author
-//            pstmtPeople.setBoolean(7, false);
-//            pstmtPeople.setInt(8, getLastInsertedPersonId()+1);
-//            pstmtPeople.executeUpdate();
-//
-//            pstmtPeople.setString(1, "Jane");
-//            pstmtPeople.setString(2, "Smith");
-//            pstmtPeople.setDate(3, Date.valueOf("1990-02-02"));
-//            pstmtPeople.setString(4, "jane.smith@example.com");
-//            pstmtPeople.setString(5, "098-765-4321");
-//            pstmtPeople.setBoolean(6, false);
-//            pstmtPeople.setBoolean(7, true);
-//            pstmtPeople.setInt(8, getLastInsertedPersonId()+1);// Example borrower
-//            pstmtPeople.executeUpdate();
-//
-//            // Assume we know the IDs of the inserted people (this is simplified)
-//            int authorId = 1;  // Example author ID
-//            int borrowerId = 2;  // Example borrower ID
-//
-//            // Insert dummy records into Books
-//            pstmtBooks.setString(1, "The Great Adventure");
-//            pstmtBooks.setString(2, "Fiction");
-//            pstmtBooks.setString(3, "Fictional Publisher");
-//            pstmtBooks.setDate(4, Date.valueOf("2024-01-01"));
-//            pstmtBooks.setString(5, "English");
-//            pstmtBooks.setInt(6, 10);
-//            pstmtBooks.setInt(7, 8);
-//            pstmtBooks.setInt(8, 2);
-//            pstmtBooks.setInt(9, authorId);
-//            pstmtBooks.setInt(10, getLastInsertedBookId()+1);
-//            pstmtBooks.executeUpdate();
-//
-//            pstmtBooks.setString(1, "Learning Java");
-//            pstmtBooks.setString(2, "Educational");
-//            pstmtBooks.setString(3, "Tech Publisher");
-//            pstmtBooks.setDate(4, Date.valueOf("2023-01-01"));
-//            pstmtBooks.setString(5, "English");
-//            pstmtBooks.setInt(6, 5);
-//            pstmtBooks.setInt(7, 5);
-//            pstmtBooks.setInt(8, 0);
-//            pstmtBooks.setInt(9, authorId);
-//            pstmtBooks.setInt(10, getLastInsertedBookId()+1);
-//            pstmtBooks.executeUpdate();
-//
-//            // Assume we know the IDs of the inserted books (this is simplified)
-//            int bookId1 = 1;  // Example book ID
-//            int bookId2 = 2;  // Example book ID
-//
-//            // Insert dummy records into BorrowedBooks
-//            pstmtBorrowedBooks.setInt(1, bookId1);
-//            pstmtBorrowedBooks.setInt(2, borrowerId);
-//            pstmtBorrowedBooks.setDate(3, Date.valueOf("2024-08-01"));
-//            pstmtBorrowedBooks.setDate(4, Date.valueOf("2024-08-15"));
-//            pstmtBorrowedBooks.setInt(5, getLastInsertedBorrowedBookId()+1);
-//            pstmtBorrowedBooks.executeUpdate();
-//
-//
-//
-//            System.out.println("Tables populated with dummy data");
-//
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
+        // Create a few people
+        insertPerson("John", "Doe", "1990-01-01", "john.doe@example.com", "1234567890", true, false);
+        insertPerson("Jane", "Doe", "1992-02-02", "jane.doe@example.com", "0987654321", false, true);
+        insertPerson("Bob", "Smith", "1980-03-03", "bob.smith@example.com", "5551234567", true, true);
 
+        // Create a few books
+        int authorId1 = getLastInsertedPersonId();
+        insertBook("Book 1", "Fiction", "Publisher 1", new java.util.Date(), "English", 10, 10, 0, authorId1);
+        insertBook("Book 2", "Non-Fiction", "Publisher 2", new java.util.Date(), "Spanish", 20, 20, 0, authorId1);
 
+        int authorId2 = getLastInsertedPersonId();
+        insertBook("Book 3", "Romance", "Publisher 3", new java.util.Date(), "French", 15, 15, 0, authorId2);
+
+        // Create a few borrowed books
+        int bookId1 = getLastInsertedBookId();
+        int borrowerId1 = getLastInsertedPersonId();
+        insertBorrowedBook(bookId1, borrowerId1, "2022-01-01", "2022-01-31");
+
+        int bookId2 = getLastInsertedBookId();
+        int borrowerId2 = getLastInsertedPersonId();
+        insertBorrowedBook(bookId2, borrowerId2, "2022-02-01", "2022-02-28");
     }
 
 
