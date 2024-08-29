@@ -50,7 +50,7 @@ public class AuthorView {
                     JOptionPane.showConfirmDialog(Mainpanel,
                             "Enter all fields",
                             "Error",
-                            JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.INFORMATION_MESSAGE);
                 }else {
 
 
@@ -58,7 +58,7 @@ public class AuthorView {
                     JOptionPane.showConfirmDialog(Mainpanel,//weni wat om hier te doen nie -> the 'this' needs to reference an actual component, I just referenced the Mainpanel component in place of 'this'
                             "Added to db",
                             "Confirm",
-                            JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.INFORMATION_MESSAGE);
 
                     DefaultTableModel model = (DefaultTableModel) tblAuthors.getModel();
                     populateAuthorTable(AuthorController.getAuthors());
@@ -97,7 +97,9 @@ public class AuthorView {
 
                 // Remove the selected row from the table
                 DefaultTableModel model = (DefaultTableModel) tblAuthors.getModel();
-                model.removeRow(selectedRow);
+                int id = (int) tblAuthors.getValueAt(selectedRow, 5);
+                AuthorController.deleteAuthor(id);
+                populateAuthorTable(AuthorController.getAuthors());
                 txtName.setText("");
                 txtSurname.setText("");
                 txtDOB.setText("");
@@ -115,12 +117,9 @@ public class AuthorView {
                         String dob = txtDOB.getText();
                         String email = txtEmail.getText();
                         String phone = txtphone.getText();
-
-                        tableModel.setValueAt(name, selectedRow, 0);
-                        tableModel.setValueAt(surname, selectedRow, 1);
-                        tableModel.setValueAt(dob, selectedRow, 2);
-                        tableModel.setValueAt(email, selectedRow, 3);
-                        tableModel.setValueAt(phone, selectedRow, 4);
+                        int id = (int) tblAuthors.getValueAt(selectedRow, 5);
+                        AuthorController.editAuthor(id, name, surname, dob, email, phone);
+                        populateAuthorTable(AuthorController.getAuthors());
                     }
                 txtName.setText("");
                 txtSurname.setText("");
@@ -154,17 +153,16 @@ public class AuthorView {
         searchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
-            }
-        });
-        searchButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
                 ArrayList<AuthorModel> authors = AuthorController.getAuthors();
                 ArrayList<AuthorModel> result = new ArrayList<>();
                 for (AuthorModel author: authors) {
-                    if (author.getName().contains(Search_txt.getText())||author.getSurname().contains(Search_txt.getText())||author.getEmail().contains(Search_txt.getText())){
+                    String name = author.getName().toLowerCase();
+                    String surname = author.getSurname().toLowerCase();
+                    String email = author.getEmail().toLowerCase();
+                    String nameSearch = Search_txt.getText().toLowerCase();
+                    String surnameSearch = Search_txt.getText().toLowerCase();
+                    String emailSearch = Search_txt.getText().toLowerCase();
+                    if (name.contains(nameSearch)||surname.contains(surnameSearch)||email.contains(emailSearch)){
                         result.add(author);
                     }
                 }
