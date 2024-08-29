@@ -63,8 +63,17 @@ public class AuthorController {
 
     }
 
+    public static AuthorModel getAuthorById(int i) {
+        return db.getAuthorById(i);
+    }
+
     public void setAuthorModel(AuthorModel authorModel) {
         this.authorModel = authorModel;
+    }
+
+    public static void editAuthor(int id, String name, String surname, String dob, String email, String phone) {
+        db.connect();
+        db.updatePerson(id, name, surname, dob, email, phone);
     }
 
 

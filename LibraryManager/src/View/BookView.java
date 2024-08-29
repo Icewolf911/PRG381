@@ -5,6 +5,8 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.SQLOutput;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -54,7 +56,7 @@ public class BookView extends Component {
         ArrayList<AuthorModel> authors = AuthorController.getAuthors();
         for (PersonModel author : authors) {
 //            Author_cmbx.addItem(author.getName() + " " + author.getSurname());
-            Author_cmbx.addItem(author);
+            Author_cmbx.addItem(author.getId()+" "+author.getName() + " " + author.getSurname());
         }
         populateBooksTable();
 
@@ -65,7 +67,9 @@ public class BookView extends Component {
                 String title = Title_txt.getText();
                 String genre = Genre_txt.getText();
 
-                AuthorModel author = (AuthorModel) Author_cmbx.getItemAt(Author_cmbx.getSelectedIndex());
+                AuthorModel author =
+                        AuthorController.getAuthorById(Integer.parseInt(Author_cmbx.getSelectedItem().toString().split(
+                                " ")[0]));
                 String publisher = Publisher_txt.getText();
                 String publishDate = PublishDate_txt.getText();
                 String language = Language_txt.getText();
@@ -87,7 +91,7 @@ public class BookView extends Component {
                     JOptionPane.showMessageDialog(Mainpanel, "One or more fields are invalid.", "Invalid Fields", JOptionPane.ERROR_MESSAGE);
                 } else {
                     dbConnection.insertBook(title, genre, publisher, publishDateAsDate, language, numCopies,
-                            availableCopies, borrowedCopies, 0);
+                            availableCopies, borrowedCopies, author.getId());
                     System.out.println("Book Added");
                     DefaultTableModel model = (DefaultTableModel) ExistingBooks_tbl.getModel();
                     model.addRow(new Object[] {title, genre, author, publisher, publishDateAsDate, language, numCopies, availableCopies, borrowedCopies});
@@ -184,7 +188,8 @@ public class BookView extends Component {
 
                 String title = Title_txt.getText();
                 String genre = Genre_txt.getText();
-                AuthorModel author = (AuthorModel) Author_cmbx.getItemAt(Author_cmbx.getSelectedIndex());
+                AuthorModel author = AuthorController.getAuthorById(Integer.parseInt(Author_cmbx.getSelectedItem().toString().split(
+                        " ")[0]));
                 String publisher = Publisher_txt.getText();
                 String publicationDate = PublishDate_txt.getText();
                 String language = Language_txt.getText();
@@ -234,6 +239,44 @@ public class BookView extends Component {
 
         });
 
+        ExistingBooks_tbl.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+                super.mouseClicked(e);
+                if (e.getClickCount() == 1) { // single click
+
+                    int selectedRow = ExistingBooks_tbl.getSelectedRow();
+
+                    if (selectedRow != -1) {
+                        Title_txt.setText((String) ExistingBooks_tbl.getValueAt(selectedRow, 0));
+                        Genre_txt.setText((String) ExistingBooks_tbl.getValueAt(selectedRow, 1));
+                        Publisher_txt.setText((String) ExistingBooks_tbl.getValueAt(selectedRow, 3));
+                        PublishDate_txt.setText((String) ExistingBooks_tbl.getValueAt(selectedRow, 4));
+                        Language_txt.setText((String) ExistingBooks_tbl.getValueAt(selectedRow, 5));
+                        NumCopies_txt.setText( ExistingBooks_tbl.getValueAt(selectedRow, 6).toString());
+                        AvailableCopies_txt.setText(ExistingBooks_tbl.getValueAt(selectedRow, 7).toString());
+                        BorrowedCopies_txt.setText(ExistingBooks_tbl.getValueAt(selectedRow, 8).toString());
+                        BookID_txt.setText(ExistingBooks_tbl.getValueAt(selectedRow, 9).toString());
+                        int authorId = (int) ExistingBooks_tbl.getValueAt(selectedRow, 9);
+
+                        String authorFullNameAndID =
+                                authorId +" "+ AuthorController.getAuthorById(authorId).getName() + " " +
+                                        AuthorController.getAuthorById(authorId).getSurname();
+                        System.out.println(authorFullNameAndID);
+                        for (int i = 0; i < Author_cmbx.getItemCount(); i++) {
+                            if (Author_cmbx.getItemAt(i).equals(authorFullNameAndID)) {
+                                Author_cmbx.setSelectedIndex(i);
+                                break;
+                            }
+                        }
+                    }
+
+
+                }
+
+            }
+        });
     }
 
     private int getAuthorId(String authorName) {
@@ -269,7 +312,8 @@ public class BookView extends Component {
     private void populateBooksTable() {
         ArrayList<BookModel> books = BookController.getBooks();
         // Create a table model with two columns: "First Name" and "Last Name"
-        DefaultTableModel model = new DefaultTableModel(new String[]{"Title", "Author", "Publication Date"}, 0);
+        DefaultTableModel model = new DefaultTableModel(new String[]{"Title","Genre", "Author","Publisher", "Publication Date",
+                "Language","Number of Copies","Available Copies","Borrowed Copies","Book ID"}, 0);
 
         // Set the model to the table
         ExistingBooks_tbl.setModel(model);
@@ -277,11 +321,19 @@ public class BookView extends Component {
         // Populate the table with books
         for (BookModel book : books) {
             String title = book.getTitle();
-            String author = book.getAuthor().getName() + " " + book.getAuthor().getSurname();
+            String genre = book.getGenre();
+
             String publicationDate = book.getPublicationDate();
+            String language = book.getLanguage();
+            int numCopies = book.getNumberOfCopies();
+            int availableCopies = book.getNumberOfAvailableCopies();
+            int borrowedCopies = book.getNumberOfBorrowedCopies();
+            int bookID = book.getId();
+            String publisher = book.getPublisher();
+            String author = book.getAuthor().getId()+" "+book.getAuthor().getName() + " " + book.getAuthor().getSurname();
 
             // Add the book's first name and last name as a row in the table
-            model.addRow(new Object[]{title, author, publicationDate});
+            model.addRow(new Object[]{title, genre, author,publisher, publicationDate, language, numCopies, availableCopies, borrowedCopies, bookID});
         }
     }
 
